@@ -2,28 +2,39 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Bresenham's Line Algorithm</title>
+    <title>DDA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        select, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+    </style>
     <link href="style/main.css" rel="stylesheet" type="text/css">
 </head>
 <body>
     
-<div class="container">
-    <div class="heading">
-        <h1 class="title">Bresenham Algorithm</h1>
-        <h3 class="author">UIT</h3>
-    </div>
-    <p class="hint">ESC</p>
+    <div class="container">
+        <label for="pageSelect">Chọn trang:</label>
+        <select id="pageSelect">
+            <option value="DDA.html">DDA</option>
+            <option value="Bresenham.html">Bresenham</option>
+        </select>
+        <button onclick="redirectToPage()">Chọn thuật toán</button>
 
-    <div class="main-container">
-        <canvas id="canvas">
-        </canvas>
+        <script>
+            function redirectToPage() {
+                var selectedPage = document.getElementById("pageSelect").value;
+                window.location.href = selectedPage;
+            }
+        </script>
     </div>
-
-    <div class="buttons">
-        <button id="reset">
-            Reset
-        </button>
-    </div>
-
-    <script type="text/javascript" src="src/bresenham.js"></script>
-</div>
+</body>
