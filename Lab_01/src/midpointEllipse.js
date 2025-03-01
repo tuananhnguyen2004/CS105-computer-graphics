@@ -46,52 +46,50 @@ function Painter(context, width, height) {
                 this.setPixel(x + i, y + j, rgba);
     }
 
-    // thuật toán Bresenham
-    this.drawLine = function(p0, p1, rgba) {
-        var x0 = p0[0], y0 = p0[1];
-        var x1 = p1[0], y1 = p1[1];
-        var dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
-        var d;
-        var direction;
-        if (dx == 0 && dy == 0)
-            return;
-        if (dy <= dx) {
-            // nếu điểm đầu nằm bên phải --> đổi điểm
-            if (x1 < x0) {
-                var tx = x0; x0 = x1; x1 = tx;
-                var ty = y0; y0 = y1; y1 = ty;
+    // thuật toán Midpoint vẽ elip
+    this.midpoint = function(p, rgba) {
+        var a = 150;
+        var b = 80;
+        var q = a * a / Math.sqrt(a * a + b * b);
+        var x = 0;
+        var y = -b; // sử dụng tọa độ màn hình --> trục y hướng xuống
+        var m = 3 * b * b;
+        var n = 2 * a * a - 2 * a * a * b + 3 * b * b;
+        var f = a * a / 4 + b * b - a * a * b;
+
+        while (x < q) {
+            if (f < 0) {
+                f += m;
+                m += 2 * b * b;
+                n += 2 * b *b;
             }
-            // kiểm tra hướng của đoạn thẳng là lên hay xuống
-            direction = (y1 - y0 < 0)? -1 : 1;
-            d = 2 * dy - dx;
-            var y = y0;
-            for (var x = x0; x <= x1; ++x) {
-                this.setPixel(x, y, rgba);
-                if (d >= 0) {
-                    d -= 2 * dx;
-                    y += direction;
-                }
-                d += 2 * dy;
+            else {
+                f += n;
+                m += 2 * b * b;
+                n += 2 * a * a + 2 * b * b;
+                y++;
             }
+            x++;
+            this.setPixel(p[0] + x, p[1] + y, rgba);
+            this.setPixel(p[0] - x, p[1] + y, rgba);
+            this.setPixel(p[0] + x, p[1] - y, rgba);
+            this.setPixel(p[0] - x, p[1] - y, rgba);
         }
-        else {
-            // nếu điểm đầu nằm trên --> đổi điểm
-            if (y1 < y0) {
-                var tx = x0; x0 = x1; x1 = tx;
-                var ty = y0; y0 = y1; y1 = ty;
+
+        var e = Math.round(b * b * (x + 0.5) * (x + 0.5) + a * a * (y + 1) * (y + 1) - a * a * b * b);
+        while (y < 0) {
+            if (e < 0) {
+                e += b * b * (2 * x + 2) + a * a * (3 + 2 * y)
+                x++;
             }
-            // kiểm tra hướng của đoạn thẳng là trái hoặc phải
-            direction = (x1 - x0 < 0)? -1 : 1;
-            d = 2 * dx - dy;
-            var x = x0;
-            for (var y = y0; y <= y1; ++y) {
-                this.setPixel(x, y, rgba);
-                if (d >= 0) {
-                    d -= 2 * dy;
-                    x += direction;
-                }
-                d += 2 * dx;
+            else {
+                e += a * a * (3 + 2 * y);
             }
+            y++;
+            this.setPixel(p[0] + x, p[1] + y, rgba);
+            this.setPixel(p[0] - x, p[1] + y, rgba);
+            this.setPixel(p[0] + x, p[1] - y, rgba);
+            this.setPixel(p[0] - x, p[1] - y, rgba);
         }
     }
 
@@ -117,11 +115,11 @@ function Painter(context, width, height) {
         for (var i = 0; i < n; i++)
             this.drawPoint(this.points[i], pointRgba);
 
-        for (var i = 0; i < n - 1; i++)
-            this.drawLine(this.points[i], this.points[i + 1], lineRgba);
+        for (var i = 0; i < n; i++)
+            this.midpoint(this.points[i], lineRgba);
 
         if (n > 0 && (this.points[n - 1][0] != p[0] || this.points[n - 1][1] != p[1])) {
-            this.drawLine(this.points[n - 1], p, vlineRgba); // draw red line while moving mouse cursor
+            this.midpoint(p, vlineRgba); // draw red line while moving mouse cursor
         }
         
         this.context.putImageData(this.imageData, 0, 0);
