@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   FirstPersonControls,
   OrbitControls,
@@ -11,7 +11,7 @@ import {
   Select,
   Bloom,
 } from "@react-three/postprocessing";
-import Planet from "./components/planet";
+import Planet from "./components/Planet";
 import Background from "./components/Background";
 import { useRef, useState } from "react";
 import Sun from "./components/Sun";
@@ -26,7 +26,7 @@ const planets = [
     textureUrl: "/textures/mercury.jpg",
     nightTextureUrl: "/textures/mercury.jpg",
     distance: 10,
-    speed: 0.02,
+    speed: 2.0,
   },
   {
     name: "Venus",
@@ -42,7 +42,7 @@ const planets = [
     textureUrl: "/textures/earth_daymap.jpg",
     nightTextureUrl: "/textures/earth_nightmap.jpg",
     distance: 25.64,
-    speed: 0.01,
+    speed: 0.075,
   },
   {
     name: "Mars",
@@ -89,17 +89,38 @@ const planets = [
 
 export default function App() {
   const [hovered, setHovered] = useState(null);
+  const [target, setTarget] = useState(false);
+
+  const pickPlanet = (targetPlanet) => {
+    setTarget(targetPlanet)
+    console.log(targetPlanet.current.position);
+  };
+
+  function CameraController() {
+    const {camera} = useThree();
+    const camRef = useRef()
+    if (target) {
+      useFrame(() => {
+        // camRef.current.position = targetPlanet.current.position;
+        camera.lookAt(target.current.position);
+        camRef.current.target = target.current.position;
+      });
+    }
+    return <OrbitControls  ref={camRef} camera={camera}/>;
+  }
+
   return (
     <Canvas
       camera={{ position: [0, 0, 10], fov: 75 }}
       style={{ width: "100vw", height: "100vh" }}
     >
   
-      {/* <GridHelper size={500} divisions={10}/> */}
+      <GridHelper size={500} divisions={10}/>
       <Background />
       <ambientLight intensity={0.1} />
 
-      <OrbitControls />
+      <CameraController/>
+      {/* <OrbitControls/> */}
 
       <Selection>
         <EffectComposer multisampling={8} autoClear={false}>
@@ -123,7 +144,7 @@ export default function App() {
         {planets.map((planet, i) => (
           <group key={i}>
             
-          <Planet  {...planet} position={[planet.distance, 0, 0]} />
+          <Planet  {...planet} position={[planet.distance, 0, 0]} handleClick={pickPlanet} />
           <OrbitLine radius={planet.distance}/>
           </group>
         ))}

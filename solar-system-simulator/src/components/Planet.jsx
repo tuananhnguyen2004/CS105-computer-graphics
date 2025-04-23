@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
-import { TextureLoader, Vector3 } from "three";
+import { Clock, TextureLoader, Vector3 } from "three";
 import { Select } from "@react-three/postprocessing";
 import Outlined from "./Outline";
 import {PlanetMaterial} from "../shaders/PlanetMaterial";
@@ -14,8 +14,8 @@ export default function Planet({
   nightTextureUrl,
   rotationSpeed = 0.01,
   speed = 0.01,
-  distance
-
+  distance,
+  handleClick
 }) {
   const dayMap = useLoader(TextureLoader, textureUrl);
   const nightMap = useLoader(TextureLoader, nightTextureUrl);
@@ -25,12 +25,13 @@ export default function Planet({
   const useSameMap = !nightTextureUrl || textureUrl === nightTextureUrl;
 
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (!meshRef.current || !materialRef.current) return;
 
     meshRef.current.rotation.y += rotationSpeed;
 
-    angleRef.current += speed;
+    angleRef.current += speed * delta;
+    // angleRef.current += speed;
     const x = Math.cos(angleRef.current) * distance;
     const z = Math.sin(angleRef.current) * distance;
     meshRef.current.position.set(x, 0, z);
@@ -48,9 +49,13 @@ export default function Planet({
     materialRef.current.uniforms.lightDirection.value = direction;
   });
 
+  const handleClick1 = () => {
+    handleClick(meshRef);
+  }
+
   return (
     <Outlined>
-      <mesh ref={meshRef} position={position}>
+      <mesh ref={meshRef} position={position} onClick={handleClick1}>
         <sphereGeometry args={[size, 64, 64]} />
         <planetMaterial
           ref={materialRef}
