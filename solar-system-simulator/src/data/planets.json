@@ -1,0 +1,124 @@
+[
+    {
+        "name": "Mercury",
+        "img": "mercury.jpg",
+        "equatorial_diameter": 4879,
+        "mass": "3.3e23",
+        "mean_distance_from_sun": 58300000,
+        "rotation_period": 59,
+        "solar_orbit_period": 88,
+        "surface_gravity": 3.7,
+        "surface_temperature": 167,
+        "temperature_summer": 473,
+        "temperature_winter": -183,
+        "description": "Mercury is the closest planet to the Sun and the smallest in the Solar System. It has a rocky, cratered surface much like the Moon. With virtually no atmosphere to retain heat, temperatures swing drastically between day and night."
+    },
+    {
+        "name": "Venus",
+        "img": [
+            "venus_atmosphere.jpg",
+            "venus_surface.jpg"
+        ],
+        "equatorial_diameter": 12104,
+        "mass": "4.9e24",
+        "mean_distance_from_sun": 108000000,
+        "rotation_period": -243,
+        "solar_orbit_period": 225,
+        "surface_gravity": 8.9,
+        "surface_temperature": 462,
+        "temperature_summer": null,
+        "temperature_winter": null,
+        "description": "Venus is similar in size and structure to Earth but covered with thick clouds of sulfuric acid. Its surface is rocky and volcanic, with extreme temperatures caused by a runaway greenhouse effect, making it the hottest planet."
+    },
+    {
+        "name": "Earth",
+        "img": [
+            "earth_cloud.jpg",
+            "earth_daymap.jpg",
+            "earth_nightmap.jpg"
+        ],
+        "equatorial_diameter": 12756,
+        "mass": "6e24",
+        "mean_distance_from_sun": 150000000,
+        "rotation_period": 1,
+        "solar_orbit_period": 365,
+        "surface_gravity": 9.8,
+        "surface_temperature": 15,
+        "temperature_summer": null,
+        "temperature_winter": null,
+        "description": "Earth is the only planet known to support life, with liquid water covering over 70% of its surface. It has a breathable atmosphere and a protective magnetic field. Its surface includes mountains, oceans, forests, and deserts."
+    },
+    {
+        "name": "Mars",
+        "img": "mars.jpg",
+        "equatorial_diameter": 6792,
+        "mass": "6.4e23",
+        "mean_distance_from_sun": 228000000,
+        "rotation_period": 1.03,
+        "solar_orbit_period": 687,
+        "surface_gravity": 3.7,
+        "surface_temperature": -63,
+        "temperature_summer": 17,
+        "temperature_winter": -140,
+        "description": "Mars is a cold desert world with the largest volcano and canyon in the Solar System. It has polar ice caps and signs of past water activity. Its thin atmosphere is mostly carbon dioxide, and it may have underground water today."
+    },
+    {
+        "name": "Jupiter",
+        "img": "jupiter.jpg",
+        "equatorial_diameter": 142984,
+        "mass": "1.9e27",
+        "mean_distance_from_sun": 780000000,
+        "rotation_period": 0.41,
+        "solar_orbit_period": 4333,
+        "surface_gravity": 25,
+        "surface_temperature": -120,
+        "temperature_summer": null,
+        "temperature_winter": null,
+        "description": "Jupiter is the largest planet in the Solar System and a gas giant with a thick atmosphere of hydrogen and helium. Its most famous feature is the Great Red Spot—a massive storm system. It has at least 79 moons, including Ganymede, the largest moon in the Solar System."
+    },
+    {
+        "name": "Saturn",
+        "img": [
+            "saturn.jpg",
+            "saturn_ring_alpha.jpg"
+        ],
+        "equatorial_diameter": 120536,
+        "mass": "5.7e26",
+        "mean_distance_from_sun": 1430000000,
+        "rotation_period": 0.45,
+        "solar_orbit_period": 10759,
+        "surface_gravity": 10.4,
+        "surface_temperature": -125,
+        "temperature_summer": null,
+        "temperature_winter": null,
+        "description": "Saturn is best known for its spectacular ring system, made of ice and rock particles. It is a gas giant composed mostly of hydrogen and helium, and has over 80 moons including Titan, which has a thick atmosphere and lakes of methane."
+    },
+    {
+        "name": "Uranus",
+        "img": "uranus.jpg",
+        "equatorial_diameter": 51118,
+        "mass": "8.7e25",
+        "mean_distance_from_sun": 2870000000,
+        "rotation_period": -0.72,
+        "solar_orbit_period": 30687,
+        "surface_gravity": 8.7,
+        "surface_temperature": -210,
+        "temperature_summer": null,
+        "temperature_winter": null,
+        "description": "Uranus is an ice giant with a pale blue color due to methane in its atmosphere. It rotates on its side, likely due to a massive collision in the past. Its atmosphere is made of hydrogen, helium, and icy compounds like water, ammonia, and methane."
+    },
+    {
+        "name": "Neptune",
+        "img": "neptune.jpg",
+        "equatorial_diameter": 49528,
+        "mass": "1.02e26",
+        "mean_distance_from_sun": 4490000000,
+        "rotation_period": 0.67,
+        "solar_orbit_period": 60190,
+        "surface_gravity": 11.2,
+        "surface_temperature": -200,
+        "temperature_summer": null,
+        "temperature_winter": null,
+        "description": "Neptune is the farthest known planet from the Sun. It is an ice giant with a dynamic atmosphere, featuring supersonic winds and dark storms. It has a deep blue color and 14 known moons, including Triton, which orbits in the opposite direction of the planet's rotation."
+    }
+]
