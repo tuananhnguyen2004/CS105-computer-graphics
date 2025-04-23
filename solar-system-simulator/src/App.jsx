@@ -13,11 +13,12 @@ import {
 } from "@react-three/postprocessing";
 import Planet from "./components/Planet";
 import Background from "./components/Background";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sun from "./components/Sun";
 import AxisHelper from "./components/AxisHelper";
 import GridHelper from "./components/GridHelper";
 import OrbitLine from "./components/OrbitLine";
+import { Object3D, Quaternion, Vector3 } from "three";
 
 const planets = [
   {
@@ -89,24 +90,57 @@ const planets = [
 
 export default function App() {
   const [hovered, setHovered] = useState(null);
-  const [target, setTarget] = useState(false);
+  const [target, setTarget] = useState(null);
+  const [prevPosition, setPrevPosition] = useState(new Vector3(0, 0, 0));
+  const [prevQuaternion, setPrevQuaternion] = useState(new Quaternion(0, 0, 0, 0));
 
-  const pickPlanet = (targetPlanet) => {
-    setTarget(targetPlanet)
-    console.log(targetPlanet.current.position);
-  };
+  const setTargetPlanet = (targetPlanet) => {
+    setTarget(targetPlanet);
+  }
 
   function CameraController() {
     const {camera} = useThree();
-    const camRef = useRef()
-    if (target) {
-      useFrame(() => {
-        // camRef.current.position = targetPlanet.current.position;
-        camera.lookAt(target.current.position);
-        camRef.current.target = target.current.position;
-      });
-    }
-    return <OrbitControls  ref={camRef} camera={camera}/>;
+    const camRef = useRef();
+    const offset = new Vector3(10, 10, 10);
+    const [isRotating, setIsRotating] = useState(false);
+
+    useEffect(() => {
+      window.addEventListener('wheel', () => {console.log('scroll');})
+      return () => {
+        window.removeEventListener('wheel', () => {console.log('scroll');})
+      }
+    }, [])
+
+    useFrame(() => {
+      if (target) {
+        const targetPosition = target.current.position;
+        if (!isRotating) {
+          camera.position.copy(targetPosition).add(offset);
+          // console.log("false");
+        }
+        else {
+          console.log("true");
+        }
+
+        camRef.current.target.copy(targetPosition);
+        camRef.current.update();
+
+        // setPrevPosition(camera.position);
+        // setPrevQuaternion(camera.quaternion);
+      }
+    })
+
+    return <OrbitControls makeDefault = {true}
+    ref={camRef}
+    onStart={() => {
+      setIsRotating(true);
+      console.log("start");
+    }}
+    onEnd={() => {
+      setIsRotating(false);
+      console.log("end");
+    }}
+    camera={camera}/>
   }
 
   return (
@@ -144,7 +178,7 @@ export default function App() {
         {planets.map((planet, i) => (
           <group key={i}>
             
-          <Planet  {...planet} position={[planet.distance, 0, 0]} handleClick={pickPlanet} />
+          <Planet  {...planet} position={[planet.distance, 0, 0]} handleClick={setTargetPlanet} />
           <OrbitLine radius={planet.distance}/>
           </group>
         ))}

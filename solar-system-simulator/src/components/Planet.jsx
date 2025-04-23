@@ -55,7 +55,7 @@ export default function Planet({
 
   return (
     <Outlined>
-      <mesh ref={meshRef} position={position} onClick={handleClick1}>
+      <mesh ref={meshRef} position={position} onDoubleClick={handleClick1}>
         <sphereGeometry args={[size, 64, 64]} />
         <planetMaterial
           ref={materialRef}
