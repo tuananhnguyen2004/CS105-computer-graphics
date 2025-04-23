@@ -1,12 +1,12 @@
 {
     "name": "Sun",
     "img": "sun.jpg",
-    "equatorial_diameter": 1391000,
-    "mass": "1.99e30",
+    "equatorial_diameter": "1.39 M KM",
+    "mass": "1.99 × 10³⁰ KG",
     "galaxy_distance_from_center": "26 038 LY",
-    "rotation_period": 25,
-    "galactic_orbit_period": 225000000,
-    "surface_gravity": 274,
-    "surface_temperature": 5505,
+    "rotation_period": "25 DAYS",
+    "galactic_orbit_period": "225 M YEARS",
+    "surface_gravity": "274 m/s²",
+    "surface_temperature": "5505 °C",
     "description": "The Sun is the star at the center of the Solar System. It is a massive ball of burning gas, mostly hydrogen and helium, providing the light and energy necessary for life on Earth. Its intense gravity holds all the planets in orbit."
 }
