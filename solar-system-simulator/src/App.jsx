@@ -18,7 +18,7 @@ import Sun from "./components/Sun";
 import AxisHelper from "./components/AxisHelper";
 import GridHelper from "./components/GridHelper";
 import OrbitLine from "./components/OrbitLine";
-import { Object3D, Quaternion, Vector3 } from "three";
+import { Object3D, Quaternion, Vector3, MathUtils } from "three";
 
 const planets = [
   {
@@ -91,42 +91,59 @@ const planets = [
 export default function App() {
   const [hovered, setHovered] = useState(null);
   const [target, setTarget] = useState(null);
-  const [prevPosition, setPrevPosition] = useState(new Vector3(0, 0, 0));
-  const [prevQuaternion, setPrevQuaternion] = useState(new Quaternion(0, 0, 0, 0));
+  const [offset, setOffset] = useState(new Vector3(10, 10, 10));
+  const [camPos, setCamPos] = useState(new Vector3(0, 0, 10));
+  const [isAutoZoom, setIsAutoZoom] = useState(false);
+  const [isOffsetCloneSet, setIsOffsetCloneSet] = useState(false);
+  const [offsetClone, setOffsetClone] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(1);
 
   const setTargetPlanet = (targetPlanet) => {
     setTarget(targetPlanet);
+    setOffset(camPos.clone().sub(targetPlanet.current.position));
+    setElapsedTime(1);
+    setIsAutoZoom(true);
+    setIsOffsetCloneSet(false);
   }
 
   function CameraController() {
     const {camera} = useThree();
     const camRef = useRef();
-    const offset = new Vector3(10, 10, 10);
     const [isRotating, setIsRotating] = useState(false);
+    const maxDistance = 20;
+    const minDistance = 5;
 
-    useEffect(() => {
-      window.addEventListener('wheel', () => {console.log('scroll');})
-      return () => {
-        window.removeEventListener('wheel', () => {console.log('scroll');})
-      }
-    }, [])
+    const autoZoom = async () => {
+      setOffset(offsetClone.clone().multiply(new Vector3(elapsedTime, elapsedTime, elapsedTime)));
+    }
 
-    useFrame(() => {
+    useFrame((_, delta) => {
+      setCamPos(camera.position);
       if (target) {
         const targetPosition = target.current.position;
         if (!isRotating) {
           camera.position.copy(targetPosition).add(offset);
-          // console.log("false");
+          // camera.position.lerp(targetPosition.add(offset, 0.1));
         }
         else {
-          console.log("true");
+        }
+
+        if (isAutoZoom) {
+          if (!isOffsetCloneSet) {
+            setOffsetClone(offset);
+            setIsOffsetCloneSet(true);
+          }
+          setElapsedTime(MathUtils.damp(elapsedTime, 0, 0.9, 0.01));
+          
+          if (offset.length() > minDistance) {
+            setOffset(offsetClone.clone().multiply(new Vector3(elapsedTime, elapsedTime, elapsedTime)));
+          } else {
+            setIsAutoZoom(false);
+          }
         }
 
         camRef.current.target.copy(targetPosition);
         camRef.current.update();
-
-        // setPrevPosition(camera.position);
-        // setPrevQuaternion(camera.quaternion);
       }
     })
 
@@ -134,14 +151,38 @@ export default function App() {
     ref={camRef}
     onStart={() => {
       setIsRotating(true);
-      console.log("start");
+      
+      const handleScroll = (e) => { 
+        if (e.deltaY < 0 && offset.length() > minDistance) {
+          // console.log("up");
+          setOffset(offset.clone().multiply(new Vector3(0.88, 0.88, 0.88)));
+        } else if (e.deltaY > 0 && offset.length() < maxDistance) {
+          // console.log("down")
+          setOffset(offset.clone().multiply(new Vector3(1.2, 1.2, 1.2)));
+        } else {
+          setOffset(offset);
+        }
+      }
+      window.addEventListener('wheel', handleScroll)
+      return () => {
+        window.removeEventListener('wheel', handleScroll)
+      }
+      // console.log("start");
+    }}
+    onChange={() => {
+      
     }}
     onEnd={() => {
       setIsRotating(false);
-      console.log("end");
+      // offset.copy(camera.position.clone().sub(camRef.current.target));
+      // offset = ;
+      setOffset(camera.position.clone().sub(camRef.current.target));
     }}
-    camera={camera}/>
-  }
+    camera={camera}
+    maxZoom={6}
+    minZoom={2}
+    />
+  };
 
   return (
     <Canvas
