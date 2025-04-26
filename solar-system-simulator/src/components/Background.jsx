@@ -8,7 +8,7 @@ export default function Background() {
 
   return (
     <mesh>
-      <sphereGeometry args={[500, 60, 40]} />
+      <sphereGeometry args={[700, 60, 40]} />
       <meshBasicMaterial map={texture} side={BackSide} />
     </mesh>
   )
