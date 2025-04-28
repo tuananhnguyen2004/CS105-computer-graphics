@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   FirstPersonControls,
   OrbitControls,
@@ -11,123 +11,106 @@ import {
   Select,
   Bloom,
 } from "@react-three/postprocessing";
-import Planet from "./components/planet";
+import Planet from "./components/Planet";
 import Background from "./components/Background";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sun from "./components/Sun";
 import AxisHelper from "./components/AxisHelper";
 import GridHelper from "./components/GridHelper";
 import OrbitLine from "./components/OrbitLine";
+import { Object3D, Quaternion, Vector3, MathUtils } from "three";
+import CameraController from "./components/CameraController";
+import SelectBar from "./components/SelectBar";
+import ControlBar from "./components/ControlBar";
 
-const planets = [
-  {
-    name: "Mercury",
-    size: 0.4,
-    textureUrl: "/textures/mercury.jpg",
-    nightTextureUrl: "/textures/mercury.jpg",
-    distance: 10,
-    speed: 0.02,
-  },
-  {
-    name: "Venus",
-    size: 0.95,
-    textureUrl: "/textures/venus_surface.jpg",
-    nightTextureUrl: "/textures/venus_surface.jpg",
-    distance: 18.46,
-    speed: 0.015,
-  },
-  {
-    name: "Earth",
-    size: 1,
-    textureUrl: "/textures/earth_daymap.jpg",
-    nightTextureUrl: "/textures/earth_nightmap.jpg",
-    distance: 25.64,
-    speed: 0.01,
-  },
-  {
-    name: "Mars",
-    size: 0.6,
-    textureUrl: "/textures/mars.jpg",
-    nightTextureUrl: "/textures/mars.jpg",
-    distance: 38.97,
-    speed: 0.008,
-  },
-  {
-    name: "Jupiter",
-    size: 2,
-    textureUrl: "/textures/jupiter.jpg",
-    nightTextureUrl: "/textures/jupiter.jpg",
-    distance: 133.33,
-    speed: 0.005,
-  },
-  {
-    name: "Saturn",
-    size: 1.7,
-    textureUrl: "/textures/saturn.jpg",
-    nightTextureUrl: "/textures/saturn.jpg",
-    distance: 200.64,
-    speed: 0.003,
-  },
-  {
-    name: "Uranus",
-    size: 1.2,
-    textureUrl: "/textures/uranus.jpg",
-    nightTextureUrl: "/textures/uranus.jpg",
-    distance: 250.82,
-    speed: 0.002,
-  },
-  {
-    name: "Neptune",
-    size: 1.1,
-    textureUrl: "/textures/neptune.jpg",
-    nightTextureUrl: "/textures/neptune.jpg",
-    distance: 300.51,
-    speed: 0.001,
-  },
-];
-
+import planets from "./data/formatedPlanets";
 
 export default function App() {
-  const [hovered, setHovered] = useState(null);
+  const [target, setTarget] = useState(null);
+  const [speed, setSpeed] = useState(1);
+  const [orbit,setOrbit] = useState(true)
+  const [grid,setGrid] = useState(true)
+  const planetRefs = useRef({});
+
+  const selectPlanet = (name) => {
+    const ref = planetRefs.current[name];
+    if (ref?.current) {
+      setTarget(ref);
+    }
+  };
+
+  useEffect(() => {
+    if (target) {
+      setSpeed(0);
+    } else {
+      setSpeed(1);
+    }
+  }, [target]);
+
   return (
-    <Canvas
-      camera={{ position: [0, 0, 10], fov: 75 }}
-      style={{ width: "100vw", height: "100vh" }}
-    >
-  
-      {/* <GridHelper size={500} divisions={10}/> */}
-      <Background />
-      <ambientLight intensity={0.1} />
+    <>
+      <SelectBar onSelect={selectPlanet} />
+      <ControlBar onChange={setSpeed} value={speed} grid={grid} orbit={orbit} toggleGrid={setGrid} toggleOrbit={setOrbit} />
+      {target && ( 
+        <button
+          className="panel"
+          onClick={() => setTarget(null)}
+          style={{
+            position: "fixed",
+            zIndex: 50,
+          }}
+        >
+          Back
+        </button>
+      )}
+      <Canvas
+        camera={{ position: [0, 0, 10], fov: 75 }}
+        style={{ width: "100vw", height: "100vh" }}
+      >
+        {grid && <GridHelper size={700} divisions={10} />}
+        <Background />
+        <ambientLight intensity={0.2} />
 
-      <OrbitControls />
+        <CameraController key={target ? target.uuid : "reset"} cameraTarget={target} />
 
-      <Selection>
-        <EffectComposer multisampling={8} autoClear={false}>
-          <Outline
-            blur
-            visibleEdgeColor="white"
-            hiddenEdgeColor="gray"
-            edgeStrength={100}
-            width={2000}
-          />
+        <Selection>
+          <EffectComposer multisampling={8} autoClear={false}>
+            {/* <Outline
+              blur
+              visibleEdgeColor="white"
+              hiddenEdgeColor="gray"
+              edgeStrength={100}
+              width={2000}
+            /> */}
 
-          <Bloom
-            luminanceThreshold={0}
-            luminanceSmoothing={0.9}
-            intensity={1.5}
-          />
-        </EffectComposer>
+            <Bloom
+              luminanceThreshold={0}
+              luminanceSmoothing={0.9}
+              intensity={1.5}
+            />
+          </EffectComposer>
 
-        <Sun />
+          <Sun systemSpeed={speed} handleClick={setTarget} />
 
-        {planets.map((planet, i) => (
-          <group key={i}>
-            
-          <Planet  {...planet} position={[planet.distance, 0, 0]} />
-          <OrbitLine radius={planet.distance}/>
-          </group>
-        ))}
-      </Selection>
-    </Canvas>
+          {planets.map((planet, i) => {
+            const planetRef = useRef();
+            planetRefs.current[planet.name] = planetRef;
+
+            return (
+              <group key={i}>
+                <Planet
+                  {...planet}
+                  size={target ? planet.size : 1}
+                  systemSpeed={speed}
+                  outerRef={planetRef}
+                  handleClick={setTarget}
+                />
+                {orbit && <OrbitLine radius={planet.distance} />}
+              </group>
+            );
+          })}
+        </Selection>
+      </Canvas>
+    </>
   );
 }
