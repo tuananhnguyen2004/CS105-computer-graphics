@@ -32,6 +32,7 @@ export default function App() {
   const [grid,setGrid] = useState(true)
   const planetRefs = useRef({});
 
+
   const selectPlanet = (name) => {
     const ref = planetRefs.current[name];
     if (ref?.current) {
@@ -95,17 +96,17 @@ export default function App() {
           {planets.map((planet, i) => {
             const planetRef = useRef();
             planetRefs.current[planet.name] = planetRef;
-
+            console.log(planet.speed, planet.rotationSpeed, planet.name);
             return (
               <group key={i}>
                 <Planet
                   {...planet}
-                  size={target ? planet.size : 1}
+                  size={ planet.size }
                   systemSpeed={speed}
                   outerRef={planetRef}
                   handleClick={setTarget}
                 />
-                {orbit && <OrbitLine radius={planet.distance} />}
+                {orbit && <OrbitLine radius={planet.distance}  tilt={-planet.inclination}/>}
               </group>
             );
           })}
