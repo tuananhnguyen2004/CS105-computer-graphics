@@ -1,8 +1,7 @@
-import { useEffect, useRef } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
-import { TextureLoader, Vector3, Euler } from "three";
+import { useRef } from "react";
+import { Euler, SphereGeometry, TextureLoader, Vector3 } from "three";
 import Outlined from "./Outline";
-import OrbitLine from "./OrbitLine";
 
 export default function Moon({
   parentRef,
@@ -11,7 +10,7 @@ export default function Moon({
   handleClick,
   speed = 1,
   sizeRatio = 0.27,
-  distanceMultiplier = 1.5,
+  distanceMultiplier ,
   orbitTilt = 5.145, 
 }) {
   const texture = useLoader(TextureLoader, "textures/moon.jpg"); // placeholder texture
@@ -50,12 +49,12 @@ export default function Moon({
     meshRef.current.position.copy(parentPos.clone().add(orbitPos));
 
     // Self-rotation
-    meshRef.current.rotation.y += 0.5 * systemSpeed * delta;
+    meshRef.current.rotation.y += 0.23 * systemSpeed * delta;
 
     // Update Moon size dynamically
     if (meshRef.current.geometry.parameters.radius !== moonSize) {
       meshRef.current.geometry.dispose();
-      meshRef.current.geometry = new THREE.SphereGeometry(moonSize, 32, 32);
+      meshRef.current.geometry = new SphereGeometry(moonSize, 32, 32);
     }
   });
 
