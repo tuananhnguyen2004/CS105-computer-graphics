@@ -25,6 +25,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: monospace;
+  overflow: hidden;
 }
 
 .panel {
@@ -100,4 +101,40 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .highlighted {
   background: blue;
+}
+
+.planet-info-panel-show {
+  position: fixed;
+  border-radius: 10%;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 300px;
+  background-color: rgba(0, 139, 139, 0.425);
+  border: 2px solid #0ff;
+  color: white;
+  padding: 0px 16px 24px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 50;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.planet-info-panel-hide {
+  position: absolute;
+  border-radius: 10%;
+  right: -20%;
+  top: 20%;
+  height: 60%;
+  width: 300px;
+  background-color: rgba(0, 139, 139, 0.425);
+  border: 2px solid #0ff;
+  color: white;
+  padding: 0px 16px 24px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 50;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }

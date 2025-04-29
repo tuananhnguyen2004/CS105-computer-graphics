@@ -15,21 +15,21 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
     { key: 'temperature_winter', label: 'TEMPERATURE WINTER' }
   ];
 
-  const panelStyle = {
-    position: 'fixed',
-    borderRadius: '10%',
-    right: '0',
-    top: '20%', // Bắt đầu từ 20% của màn hình
-    height: '60%', // Chiếm 60% chiều cao màn hình
-    width: '300px',
-    backgroundColor: 'rgba(0, 139, 139, 0.425)', // slate-900
-    border: '2px solid #0ff',
-    color: 'white',
-    padding: '0px 16px 24px 24px',
-    overflowY: 'auto',
-    zIndex: '50',
-    boxSizing: 'border-box'
-  };
+  // const panelStyle = {
+  //   position: 'fixed',
+  //   borderRadius: '10%',
+  //   right: '0',
+  //   top: '20%', // Bắt đầu từ 20% của màn hình
+  //   height: '60%', // Chiếm 60% chiều cao màn hình
+  //   width: '300px',
+  //   backgroundColor: 'rgba(0, 139, 139, 0.425)', // slate-900
+  //   border: '2px solid #0ff',
+  //   color: 'white',
+  //   padding: '0px 16px 24px 24px',
+  //   overflowY: 'auto',
+  //   zIndex: '50',
+  //   boxSizing: 'border-box'
+  // };
 
   const headerStyle = {
     display: 'flex',
@@ -115,7 +115,7 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
    // Đăng ký xử lý sự kiện khi component được mount
    useEffect(() => {
     // Tìm panel element sau khi component được render
-    const panelElement = document.querySelector('.planet-info-panel');
+    const panelElement = document.querySelector('#planet-info-panel');
     if (panelElement) {
       // Ngăn chặn sự kiện wheel lan truyền
       const preventDefaultWheel = (e) => {
@@ -143,8 +143,8 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
 
   return (
     <>
-      <style>{scrollbarStyles}</style>
-      <div style={panelStyle} className="planet-info-panel">
+      <style className='scrollbar'>{scrollbarStyles}</style>
+      <div id='planet-info-panel' className="planet-info-panel-show">
         <div style={headerStyle}>
           <h2 style={titleStyle}>{planetData.name}</h2>
           <button 

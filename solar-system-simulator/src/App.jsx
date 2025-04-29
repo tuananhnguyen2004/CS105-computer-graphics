@@ -60,7 +60,10 @@ export default function App() {
       {target && ( 
         <button
           className="panel"
-          onClick={() => setTarget(null)}
+          onClick={() => {
+            document.querySelector('#planet-info-panel').className = "planet-info-panel-hide";
+            setTarget(null);
+          }}
           style={{
             position: "fixed",
             zIndex: 50,
@@ -70,7 +73,9 @@ export default function App() {
         </button>
       )}
 
-      <PlanetInfoPanel planetData={selectedPlanet} onClose={() => {console.log(document.querySelector('.planet-info-panel'))}}/>
+      <PlanetInfoPanel planetData={selectedPlanet} onClose={() => {
+        document.querySelector('#planet-info-panel').className = "planet-info-panel-hide";
+      }}/>
 
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
