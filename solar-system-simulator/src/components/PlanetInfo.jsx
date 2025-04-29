@@ -144,7 +144,7 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
   return (
     <>
       <style className='scrollbar'>{scrollbarStyles}</style>
-      <div id='planet-info-panel' className="planet-info-panel-show">
+      <div id='planet-info-panel' className="planet-info-panel-hide">
         <div style={headerStyle}>
           <h2 style={titleStyle}>{planetData.name}</h2>
           <button 
