@@ -10,6 +10,7 @@ import Moon from "./Moon";
 import OrbitLine from "./OrbitLine";
 
 export default function Planet({
+  id,
   name,
   texture,
   nightTexture = null,
@@ -66,12 +67,10 @@ export default function Planet({
        materialRef.current.uniforms.lightDirection.value = direction;
     }
   });
-
-  const handleClick1 = () => {
-    handleClick(meshRef);
-  };
-
+  
   useEffect(() => {
+    meshRef.current.planet_id = id;
+    console.log(meshRef.current.planet_id);
     if (outerRef) outerRef.current = meshRef.current;
     if (rotationRef.current) {
 
@@ -84,7 +83,6 @@ export default function Planet({
       <mesh
         ref={meshRef}
         position={[distance, 0, 0]}
-        onDoubleClick={handleClick1}
       >
         <mesh ref={rotationRef}>
           <sphereGeometry args={[size, 64, 64]} />

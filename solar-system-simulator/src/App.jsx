@@ -22,8 +22,10 @@ import { Object3D, Quaternion, Vector3, MathUtils } from "three";
 import CameraController from "./components/CameraController";
 import SelectBar from "./components/SelectBar";
 import ControlBar from "./components/ControlBar";
+import PlanetInfoPanel from "./components/PlanetInfo";
 
 import planets from "./data/formatedPlanets";
+import rawPlanets from "./data/planets.json";
 
 export default function App() {
   const [target, setTarget] = useState(null);
@@ -31,12 +33,16 @@ export default function App() {
   const [orbit,setOrbit] = useState(true)
   const [grid,setGrid] = useState(true)
   const planetRefs = useRef({});
+  const [selectedPlanet, setSelectedPlanet] = useState(rawPlanets[2]);
 
 
   const selectPlanet = (name) => {
     const ref = planetRefs.current[name];
+    console.log("name: " + name);
     if (ref?.current) {
       setTarget(ref);
+      // target.planet.name;
+      setSelectedPlanet(rawPlanets[ref.current.planet_id]);
     }
   };
 
@@ -55,7 +61,10 @@ export default function App() {
       {target && ( 
         <button
           className="panel"
-          onClick={() => setTarget(null)}
+          onClick={() => {
+            document.querySelector('#planet-info-panel').className = "planet-info-panel-hide";
+            setTarget(null);
+          }}
           style={{
             position: "fixed",
             zIndex: 50,
@@ -64,6 +73,11 @@ export default function App() {
           Back
         </button>
       )}
+
+      <PlanetInfoPanel planetData={selectedPlanet} onClose={() => {
+        document.querySelector('#planet-info-panel').className = "planet-info-panel-hide";
+      }}/>
+
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
         style={{ width: "100vw", height: "100vh" }}

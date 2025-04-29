@@ -6,8 +6,9 @@ import planets from "../data/formatedPlanets";
 const SelectBar = ({ onSelect }) => {
 
     const handleClick = (name) => { 
-        console.log(name)
-        onSelect(name)
+        console.log(name);
+        document.querySelector('#planet-info-panel').className = "planet-info-panel-show";
+        onSelect(name);
     }
   return (
     <div
