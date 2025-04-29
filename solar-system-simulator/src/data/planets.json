@@ -1,5 +1,6 @@
 [
   {
+    "id": 0,
     "name": "Mercury",
     "image": "textures/Mercury.png",
     "texture": "textures/mercury.jpg",
@@ -17,6 +18,7 @@
     "inclination": 7.00
   },
   {
+    "id": 1,
     "name": "Venus",
     "image": "textures/Venus.png",
     "texture": "textures/venus_surface.jpg",
@@ -34,6 +36,7 @@
     "inclination": 3.39
   },
   {
+    "id": 2,
     "name": "Earth",
     "image": "textures/Earth.png",
     "texture": "textures/earth_daymap.jpg",
@@ -52,6 +55,7 @@
     "inclination": 0.00
   },
   {
+    "id": 3,
     "name": "Mars",
     "image": "textures/Mars.png",
     "texture": "textures/mars.jpg",
@@ -69,6 +73,7 @@
     "inclination": 1.85
   },
   {
+    "id": 4,
     "name": "Jupiter",
     "image": "textures/Jupiter.png",
     "texture": "textures/jupiter.jpg",
@@ -86,6 +91,7 @@
     "inclination": 1.31
   },
   {
+    "id": 5,
     "name": "Saturn",
     "image": "textures/Saturn.png",
     "texture": "textures/saturn.jpg",
@@ -103,6 +109,7 @@
     "inclination": 2.49
   },
   {
+    "id": 6,
     "name": "Uranus",
     "image": "textures/Uranus.png",
     "texture": "textures/uranus.jpg",
@@ -120,6 +127,7 @@
     "inclination": 0.77
   },
   {
+    "id": 7,
     "name": "Neptune",
     "image": "textures/Neptune.png",
     "texture": "textures/neptune.jpg",
