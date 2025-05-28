@@ -18,9 +18,9 @@ export default function Moon({
   const meshRef = useRef();
   const angleRef = useRef(Math.random() * Math.PI * 2);
   const tiltEuler = new Euler(
-      ((orbitTilt) * Math.PI) / 180, 
-      0,
-      0,
+    ((orbitTilt) * Math.PI) / 180, 
+    0,
+    0,
   );
 
   useFrame((state, delta) => {
