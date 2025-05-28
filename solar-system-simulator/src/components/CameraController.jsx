@@ -48,7 +48,7 @@ export default function CameraController({ cameraTarget }) {
         }
         setElapsedTime(MathUtils.damp(elapsedTime, 0, 0.9, 0.01));
 
-        if (offset.length() > minDistance) {
+        if (offset.length() > minDistance && offsetClone) {
           setOffset(
             offsetClone
               .clone()

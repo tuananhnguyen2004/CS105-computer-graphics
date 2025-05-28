@@ -10,6 +10,7 @@ import Moon from "./Moon";
 import OrbitLine from "./OrbitLine";
 
 export default function Planet({
+  id,
   name,
   texture,
   nightTexture = null,
@@ -20,7 +21,8 @@ export default function Planet({
   size,
   handleClick,
   outerRef,
-  tilt,
+  tilt, // Axial tilt
+  inclination = 0,
 }) {
   const dayMap = useLoader(TextureLoader, texture);
   const nightMap = useLoader(
@@ -28,74 +30,85 @@ export default function Planet({
     nightTexture ? nightTexture : texture
   );
   const meshRef = useRef();
-  const rotationRef = useRef();
+  const rotationRef = useRef(); // For axial rotation and tilt
   const materialRef = useRef();
-  const angleRef = useRef(Math.random() * Math.PI * 2);
+  const angleRef = useRef(Math.random() * Math.PI * 2); // Orbital angle
   const useSameMap = !nightTexture || nightTexture === texture;
 
-  useFrame((state, delta) => {
-    if (!meshRef.current || !materialRef.current) return;
+  // Convert inclination from degrees to radians once
+  const inclinationRad = inclination * (Math.PI / 180);
 
-    rotationRef.current.rotation.y += rotationSpeed * systemSpeed;
+  useFrame((state, delta) => {
+    if (!meshRef.current || !materialRef.current || !rotationRef.current) return;
+
+    rotationRef.current.rotation.y += rotationSpeed * systemSpeed * delta; 
 
     angleRef.current += speed * delta * systemSpeed;
-    // angleRef.current += speed;
-    const x = Math.cos(angleRef.current) * distance;
-    const z = Math.sin(angleRef.current) * distance;
-    meshRef.current.position.set(x, 0, z);
+    const angle = angleRef.current;
 
-    // Calculate light direction from sun at [0, 0, 0]
+    const x_flat = Math.cos(angle) * distance;
+    const z_flat = Math.sin(angle) * distance;
+
+    const x = x_flat;
+    const y = -z_flat * Math.sin(inclinationRad); 
+    const z = z_flat * Math.cos(inclinationRad); 
+
+    meshRef.current.position.set(x, y, z);
+
     const planetPos = new Vector3();
     meshRef.current.getWorldPosition(planetPos);
 
     const direction = new Vector3()
-      .subVectors(new Vector3(0, 0, 0), planetPos)
+      .subVectors(new Vector3(0, 0, 0), planetPos) 
       .normalize();
 
-    materialRef.current.uniforms.lightDirection.value = direction;
+    // Update shader uniform
+    if (materialRef.current.uniforms.lightDirection) {
+       materialRef.current.uniforms.lightDirection.value = direction;
+    }
   });
-
-  const handleClick1 = () => {
-    handleClick(meshRef);
-  };
-
+  
   useEffect(() => {
+    meshRef.current.planet_id = id;
+    console.log(meshRef.current.planet_id);
     if (outerRef) outerRef.current = meshRef.current;
     if (rotationRef.current) {
+
       rotationRef.current.rotation.x = tilt * (Math.PI / 180);
     }
-  }, [outerRef]);
+  }, [outerRef, tilt]); 
+
   return (
     <Outlined>
       <mesh
         ref={meshRef}
         position={[distance, 0, 0]}
-        onDoubleClick={handleClick1}
       >
         <mesh ref={rotationRef}>
           <sphereGeometry args={[size, 64, 64]} />
           <planetMaterial
             ref={materialRef}
+            key={PlanetMaterial.key} // Add key for potential shader updates
             dayMap={dayMap}
             nightMap={nightMap}
-            lightDirection={new Vector3(1, 0, 0)}
+            lightDirection={new Vector3(1, 0, 0)} // Initial light direction
             useSameMap={useSameMap}
           />
-        {name === "Saturn" && <SaturnRing planetSize={size} />}
+          {name === "Saturn" && <SaturnRing planetSize={size} />}
         </mesh>
+        {name === "Earth" && <OrbitLine radius={size * 1.5} tilt={-5.145} parent={meshRef}/>}
 
-        {name === "Earth" && <OrbitLine radius={size * 3} tilt={-5.145} />}
       </mesh>
       {name === "Earth" && (
         <group>
           <Moon
-            parentRef={meshRef}
-            parentSize={size} // <<< use dynamic size here!
+            parentRef={meshRef} // Moon orbits the planet mesh
+            parentSize={size}
             handleClick={handleClick}
             systemSpeed={systemSpeed}
-            distanceMultiplier={3} // (or whatever you want)
-            speed={speed * 30} // optional: pass same orbital speed
-            orbitTilt={5.145}
+            distanceMultiplier={1.5} // Distance relative to parent size
+            speed={speed} // Moon orbits faster than Earth orbits the sun (approx)
+            orbitTilt={5.145} // Moon's orbital tilt relative to Earth's orbit
           />
         </group>
       )}
