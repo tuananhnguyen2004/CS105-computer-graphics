@@ -38,10 +38,10 @@ const formatPlanets = (raw) => {
       distance: normalize(distanceKm, maxDistanceKm, 200),
       size: planetSizeMap[planet.name] ?? 1,
       speed: calculateOrbitSpeedInRadianPerDay(planet.solar_orbit_period),
-      rotationSpeed:
-        planet.name === "Venus" || planet.name === "Uranus"
-          ? -parseRotationSpeed(planet.rotation_period)
-          : parseRotationSpeed(planet.rotation_period),
+      rotationSpeed:parseRotationSpeed(planet.rotation_period)
+        // planet.name === "Venus" || planet.name === "Uranus"
+        //   ? -parseRotationSpeed(planet.rotation_period)
+        //   : parseRotationSpeed(planet.rotation_period),
     };
   });
 };

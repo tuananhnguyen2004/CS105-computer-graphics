@@ -64,9 +64,9 @@ export default function Moon({
 
   return (
     <Outlined>
-      <mesh ref={meshRef} onDoubleClick={handleClick1}>
+      <mesh ref={meshRef} onDoubleClick={handleClick1} castShadow receiveShadow>
         <sphereGeometry args={[parentSize * sizeRatio, 32, 32]} />
-        <meshStandardMaterial map={texture} />
+        <meshPhongMaterial map={texture} />
       </mesh>
     </Outlined>
   );

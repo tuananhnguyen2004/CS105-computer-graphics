@@ -8,6 +8,7 @@ import SaturnRing from "./SaturnRing";
 import { parseDistance } from "../utils/parser";
 import Moon from "./Moon";
 import OrbitLine from "./OrbitLine";
+import Atmosphere from "./Asmosphere";
 
 export default function Planet({
   id,
@@ -24,6 +25,7 @@ export default function Planet({
   tilt, // Axial tilt
   inclination = 0,
 }) {
+  console.log(size,distance)
   const dayMap = useLoader(TextureLoader, texture);
   const nightMap = useLoader(
     TextureLoader,
@@ -39,9 +41,10 @@ export default function Planet({
   const inclinationRad = inclination * (Math.PI / 180);
 
   useFrame((state, delta) => {
-    if (!meshRef.current || !materialRef.current || !rotationRef.current) return;
+    if (!meshRef.current || !materialRef.current || !rotationRef.current)
+      return;
 
-    rotationRef.current.rotation.y += rotationSpeed * systemSpeed * delta; 
+    rotationRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
 
     angleRef.current += speed * delta * systemSpeed;
     const angle = angleRef.current;
@@ -50,8 +53,8 @@ export default function Planet({
     const z_flat = Math.sin(angle) * distance;
 
     const x = x_flat;
-    const y = -z_flat * Math.sin(inclinationRad); 
-    const z = z_flat * Math.cos(inclinationRad); 
+    const y = -z_flat * Math.sin(inclinationRad);
+    const z = z_flat * Math.cos(inclinationRad);
 
     meshRef.current.position.set(x, y, z);
 
@@ -59,33 +62,32 @@ export default function Planet({
     meshRef.current.getWorldPosition(planetPos);
 
     const direction = new Vector3()
-      .subVectors(new Vector3(0, 0, 0), planetPos) 
+      .subVectors(new Vector3(0, 0, 0), planetPos)
       .normalize();
 
     // Update shader uniform
     if (materialRef.current.uniforms.lightDirection) {
-       materialRef.current.uniforms.lightDirection.value = direction;
+      materialRef.current.uniforms.lightDirection.value = direction;
     }
   });
-  
+
   useEffect(() => {
     meshRef.current.planet_id = id;
-    console.log(meshRef.current.planet_id);
+    
     if (outerRef) outerRef.current = meshRef.current;
     if (rotationRef.current) {
-
       rotationRef.current.rotation.x = tilt * (Math.PI / 180);
     }
-  }, [outerRef, tilt]); 
+  }, [outerRef, tilt]);
 
+
+  
   return (
     <Outlined>
-      <mesh
-        ref={meshRef}
-        position={[distance, 0, 0]}
-      >
-        <mesh ref={rotationRef}>
+      <mesh ref={meshRef} position={[distance, 0, 0]} castShadow receiveShadow>
+        <mesh ref={rotationRef} castShadow receiveShadow>
           <sphereGeometry args={[size, 64, 64]} />
+          {/* <meshStandardMaterial  map={dayMap} /> */}
           <planetMaterial
             ref={materialRef}
             key={PlanetMaterial.key} // Add key for potential shader updates
@@ -95,9 +97,11 @@ export default function Planet({
             useSameMap={useSameMap}
           />
           {name === "Saturn" && <SaturnRing planetSize={size} />}
+          <Atmosphere name={name} parentSize={size}/>
         </mesh>
-        {name === "Earth" && <OrbitLine radius={size * 1.5} tilt={-5.145} parent={meshRef}/>}
-
+        {name === "Earth" && (
+          <OrbitLine radius={size * 1.5} tilt={-5.145} parent={meshRef} />
+        )}
       </mesh>
       {name === "Earth" && (
         <group>

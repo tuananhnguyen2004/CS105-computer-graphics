@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import { GridHelper } from "three";
 
-export default function GridHelper({ size = 100, divisions = 100 }) {
+export default function Grid({ size = 100, divisions = 100 }) {
   const { scene } = useThree();
   const gridRef = useRef();
 
