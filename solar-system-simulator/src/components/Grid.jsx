@@ -11,7 +11,7 @@ export default function Grid({ size = 100, divisions = 100, opacity = 0.2 }) {
       size,
       divisions,
       new Color(0xffffff),
-      new Color(0x888888)
+      new Color(0x00ffff)
     );
     const materials = Array.isArray(gridHelper.material)
       ? gridHelper.material

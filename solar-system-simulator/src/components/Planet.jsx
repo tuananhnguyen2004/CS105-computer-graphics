@@ -44,7 +44,7 @@ export default function Planet({
   const shaderRef = useRef(null);
   const rotationRef = useRef(); // For axial rotation and tilt
   const materialRef = useRef();
-  const angleRef = useRef(Math.random() * Math.PI * 2); // Orbital angle
+
   const useSameMap = !nightTexture || nightTexture === texture; // Use same map for day and night if no night texture provided
 
   // Convert inclination from degrees to radians once
@@ -56,17 +56,7 @@ export default function Planet({
 
     rotationRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
 
-    angleRef.current += speed * delta * systemSpeed;
-    const angle = angleRef.current;
-
-    const x_flat = Math.cos(angle) * distance;
-    const z_flat = -Math.sin(angle) * distance;
-
-    const x = x_flat;
-    const y = -z_flat * Math.sin(inclinationRad);
-    const z = z_flat * Math.cos(inclinationRad);
-
-    meshRef.current.position.set(x, y, z);
+    meshRef.current.rotation.y += speed * systemSpeed * delta; // Apply orbital rotation
 
     // // Update shader uniform
     // if (materialRef.current.uniforms.lightDirection) {
@@ -156,43 +146,52 @@ vec4 color = mix(nightColor, dayColor, light);
     if (rotationRef.current) {
       rotationRef.current.rotation.x = tilt * (Math.PI / 180);
     }
+    if (meshRef.current) {
+      // Set initial position based on distance
+      meshRef.current.rotation.set(
+        inclination * (Math.PI / 180),
+        0,
+        0
+
+        // Convert inclination to radians
+      );
+    }
   }, [tilt]);
 
   return (
     <Outlined>
       <group
-        
         ref={meshRef}
-        position={[distance, 0, 0]}
         castShadow
         receiveShadow
         onDoubleClick={() => {
           selectPlanet(name);
         }}
       >
-        <mesh name={name} ref={rotationRef} castShadow receiveShadow>
-          <sphereGeometry args={[size, 64, 64]} />
-          {/* <meshStandardMaterial  map={dayMap} /> */}
-          <primitive object={material} ref={materialRef} />
-          <mesh>
-            <sphereGeometry args={[size * 1.01, 64, 64]} />
-            <meshStandardMaterial
-              receiveShadow
-              color={"#00ffff"} // Glow color
-              side={BackSide} // Render backside for halo effect
-              transparent={true}
-              opacity={0.5}
-              toneMapped={false} // Keep glow brightness consistent
-              depthWrite={false}
-            />
+        <group position={[distance, 0, 0]}>
+          <mesh name={name} ref={rotationRef} castShadow receiveShadow>
+            <sphereGeometry args={[size, 64, 64]} />
+            {/* <meshStandardMaterial  map={dayMap} /> */}
+            <primitive object={material} ref={materialRef} />
+            <mesh>
+              <sphereGeometry args={[size * 1.01, 64, 64]} />
+              <meshStandardMaterial
+                receiveShadow
+                color={"#00ffff"} // Glow color
+                side={BackSide} // Render backside for halo effect
+                transparent={true}
+                opacity={0.5}
+                toneMapped={false} // Keep glow brightness consistent
+                depthWrite={false}
+              />
+            </mesh>
+            {name === "Saturn" && <SaturnRing planetSize={size} />}
+            <Atmosphere name={name} parentSize={size} />
           </mesh>
-          {name === "Saturn" && <SaturnRing planetSize={size} />}
-          <Atmosphere name={name} parentSize={size} />
-        </mesh>
-
-        {moonObject.map((moon, index) => (
-          <Moon key={index} parentSize={size} {...moon} />
-        ))}
+          {moonObject.map((moon, index) => (
+            <Moon key={index} parentSize={size} {...moon} />
+          ))}
+        </group>
       </group>
     </Outlined>
   );

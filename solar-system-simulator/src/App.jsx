@@ -60,7 +60,7 @@ export default function App() {
   }, [target]);
 
   return (
-    <SelectContext.Provider value={{ selectPlanet, systemSpeed: speed }}>
+    <SelectContext.Provider value={{ selectPlanet, systemSpeed: speed, orbit }}>
       <SelectBar />
       <ControlBar
         onChange={setSpeed}
@@ -104,7 +104,7 @@ export default function App() {
         }}
       >
         <SceneController onSceneReady={setSceneRef} />
-        {grid && <Grid size={700} divisions={200} opacity={0.1} />}
+        {grid && <Grid size={700} divisions={200} opacity={0.05} />}
         <Background />
         <ambientLight intensity={0.2} />
 
@@ -139,12 +139,12 @@ export default function App() {
           return (
             <group key={i}>
               <Planet {...planet} size={planet.size} systemSpeed={speed} />
-              {orbit && (
+           
                 <OrbitLine
                   radius={planet.distance}
                   tilt={planet.inclination}
                 />
-              )}
+        
             </group>
           );
         })}
