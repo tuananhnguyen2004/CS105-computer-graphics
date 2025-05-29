@@ -1,107 +1,133 @@
-import { Html, OrbitControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
-import { Vector3, MathUtils } from "three";
+import { useEffect, useRef } from "react";
+import { Vector3, MathUtils, Box3 } from "three";
 
 export default function CameraController({ cameraTarget }) {
-  const [target, setTarget] = useState(null);
-  const [offset, setOffset] = useState(new Vector3(10, 10, 10));
-  const [camPos, setCamPos] = useState(new Vector3(0, 0, 10));
-  const [isAutoZoom, setIsAutoZoom] = useState(false);
-  const [isOffsetCloneSet, setIsOffsetCloneSet] = useState(false);
-  const [offsetClone, setOffsetClone] = useState(null);
-  const [elapsedTime, setElapsedTime] = useState(1);
   const { camera } = useThree();
   const camRef = useRef();
-  const [isRotating, setIsRotating] = useState(false);
-  const maxDistance = 20;
-  const minDistance = 5;
 
+  const targetRef = useRef(null);
+  const offsetRef = useRef(new Vector3(10, 10, 10));
+  const offsetCloneRef = useRef(null);
+  const elapsedTimeRef = useRef(1);
+  const isAutoZoomRef = useRef(false);
+  const isOffsetCloneSetRef = useRef(false);
+  const isRotatingRef = useRef(false);
+  const camPosRef = useRef(camera.position.clone());
+
+  const maxDistance = 20;
+  const minDistanceRef = useRef(5);
+
+  // Set target when changed
   useEffect(() => {
     if (cameraTarget) {
       setTargetPlanet(cameraTarget);
-    } 
+    }
   }, [cameraTarget]);
 
   const setTargetPlanet = (targetPlanet) => {
-    setTarget(targetPlanet);
-    setOffset(camPos.clone().sub(targetPlanet.current.position));
-    setElapsedTime(1);
-    setIsAutoZoom(true);
-    setIsOffsetCloneSet(false);
+    targetRef.current = targetPlanet;
+
+    const worldTargetPos = new Vector3();
+    targetPlanet.getWorldPosition(worldTargetPos);
+    const newOffset = camPosRef.current.clone().sub(worldTargetPos);
+    offsetRef.current.copy(newOffset);
+
+    elapsedTimeRef.current = 1;
+    isAutoZoomRef.current = true;
+    isOffsetCloneSetRef.current = false;
+
+    const box = new Box3().setFromObject(targetPlanet);
+    const size = new Vector3();
+    box.getSize(size);
+    const largestDimension = Math.max(size.x, size.y, size.z);
+    minDistanceRef.current = largestDimension * 1.5;
+
+    if (camRef.current) {
+      camRef.current.enabled = false;
+    }
   };
 
-  useFrame((_, delta) => {
-    setCamPos(camera.position);
-    if (target) {
-      const targetPosition = target.current.position;
-      if (!isRotating) {
-        camera.position.copy(targetPosition).add(offset);
-        // camera.position.lerp(targetPosition.add(offset, 0.1));
-      } else {
+  useFrame(() => {
+    camPosRef.current.copy(camera.position);
+
+    if (targetRef.current) {
+      const worldTargetPos = new Vector3();
+      targetRef.current.getWorldPosition(worldTargetPos);
+
+      if (!isRotatingRef.current) {
+        const desiredPos = worldTargetPos.clone().add(offsetRef.current);
+        camera.position.lerp(desiredPos, 0.2);
       }
 
-      if (isAutoZoom) {
-        if (!isOffsetCloneSet) {
-          setOffsetClone(offset);
-          setIsOffsetCloneSet(true);
+      // Auto-zoom logic
+      if (isAutoZoomRef.current) {
+        if (!isOffsetCloneSetRef.current) {
+          offsetCloneRef.current = offsetRef.current.clone();
+          isOffsetCloneSetRef.current = true;
         }
-        setElapsedTime(MathUtils.damp(elapsedTime, 0, 0.9, 0.01));
 
-        if (offset.length() > minDistance && offsetClone) {
-          setOffset(
-            offsetClone
-              .clone()
-              .multiply(new Vector3(elapsedTime, elapsedTime, elapsedTime))
+        elapsedTimeRef.current = MathUtils.damp(
+          elapsedTimeRef.current,
+          0,
+          0.9,
+          0.01
+        );
+
+        if (
+          offsetRef.current.length() > minDistanceRef.current &&
+          offsetCloneRef.current
+        ) {
+          offsetRef.current.copy(
+            offsetCloneRef.current.clone().multiplyScalar(elapsedTimeRef.current)
           );
         } else {
-          setIsAutoZoom(false);
-          if (camRef.current) {
-            camRef.current.enabled = true; // re-enable controls
-          }
+          isAutoZoomRef.current = false;
+          if (camRef.current) camRef.current.enabled = true;
         }
       }
 
-      camRef.current.target.copy(targetPosition);
+      camRef.current.target.copy(worldTargetPos);
       camRef.current.update();
     }
   });
 
+  useEffect(() => {
+    const handleScroll = (e) => {
+      if (!targetRef.current) return;
+
+      const direction = e.deltaY < 0 ? 0.88 : 1.2;
+      const newOffset = offsetRef.current.clone().multiplyScalar(direction);
+      const length = newOffset.length();
+
+      if (
+        (e.deltaY < 0 && length > minDistanceRef.current) ||
+        (e.deltaY > 0 && length < maxDistance)
+      ) {
+        offsetRef.current.copy(newOffset);
+      }
+    };
+
+    window.addEventListener("wheel", handleScroll);
+    return () => window.removeEventListener("wheel", handleScroll);
+  }, []);
+
   return (
-    <>
-      <OrbitControls
-        makeDefault={true}
-        ref={camRef}
-        onStart={() => {
-          setIsRotating(true);
-          const handleScroll = (e) => {
-            if (e.deltaY < 0 && offset.length() > minDistance) {
-              // console.log("up");
-              setOffset(offset.clone().multiply(new Vector3(0.88, 0.88, 0.88)));
-            } else if (e.deltaY > 0 && offset.length() < maxDistance) {
-              // console.log("down")
-              setOffset(offset.clone().multiply(new Vector3(1.2, 1.2, 1.2)));
-            } else {
-              setOffset(offset);
-            }
-          };
-          window.addEventListener("wheel", handleScroll);
-          return () => {
-            window.removeEventListener("wheel", handleScroll);
-          };
-          // console.log("start");
-        }}
-        onChange={() => {}}
-        onEnd={() => {
-          setIsRotating(false);
-          // offset.copy(camera.position.clone().sub(camRef.current.target));
-          // offset = ;
-          setOffset(camera.position.clone().sub(camRef.current.target));
-        }}
-        camera={camera}
-        maxZoom={6}
-        minZoom={2}
-      />
-    </>
+    <OrbitControls
+      makeDefault
+      ref={camRef}
+      camera={camera}
+      onStart={() => {
+        isRotatingRef.current = true;
+      }}
+      onEnd={() => {
+        isRotatingRef.current = false;
+        const target = camRef.current.target.clone();
+        offsetRef.current.copy(camera.position.clone().sub(target));
+      }}
+      maxZoom={6}
+      minZoom={minDistanceRef.current}
+    />
   );
 }

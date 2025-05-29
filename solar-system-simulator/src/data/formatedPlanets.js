@@ -35,7 +35,7 @@ const formatPlanets = (raw) => {
     // let tmp=normalize(diameterKm, maxDiameter, 7)
     return {
       ...planet,
-      distance: normalize(distanceKm, maxDistanceKm, 200),
+      distance: normalize(distanceKm, maxDistanceKm, 300),
       size: planetSizeMap[planet.name] ?? 1,
       speed: calculateOrbitSpeedInRadianPerDay(planet.solar_orbit_period),
       rotationSpeed:parseRotationSpeed(planet.rotation_period)

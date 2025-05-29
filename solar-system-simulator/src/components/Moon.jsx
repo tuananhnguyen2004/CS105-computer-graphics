@@ -1,73 +1,86 @@
 import { useFrame, useLoader } from "@react-three/fiber";
-import { useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Euler, SphereGeometry, TextureLoader, Vector3 } from "three";
 import Outlined from "./Outline";
+import { SelectContext } from "../App";
+import {
+  calculateOrbitSpeedInRadianPerDay,
+  KM_PER_SCENE_UNIT,
+  parseDistance,
+  parseRotationSpeed,
+} from "../utils/parser";
+import OrbitLine from "./OrbitLine";
 
 export default function Moon({
-  parentRef,
   parentSize = 1,
-  systemSpeed = 1,
-  handleClick,
-  speed = 1,
+  name,
+  mean_distance_from_planet,
+  rotation_period,
+  solar_orbit_period,
+  ratio_to_parent,
   sizeRatio = 0.27,
-  distanceMultiplier ,
-  orbitTilt = 5.145, 
+  inclination,
+  texture,
 }) {
-  const texture = useLoader(TextureLoader, "textures/moon.jpg"); // placeholder texture
+  const { selectPlanet, systemSpeed } = useContext(SelectContext);
+  const moonTexture = useLoader(TextureLoader, texture);
   const meshRef = useRef();
-  const angleRef = useRef(Math.random() * Math.PI * 2);
-  const tiltEuler = new Euler(
-    ((orbitTilt) * Math.PI) / 180, 
-    0,
-    0,
-  );
+
+  const orbitRef = useRef();
+  const realDistance = parseDistance(mean_distance_from_planet);
+  const distance = Math.min(realDistance / KM_PER_SCENE_UNIT, 2);
+
+  const rotationSpeed = parseRotationSpeed(rotation_period);
+  const orbitSpeed = calculateOrbitSpeedInRadianPerDay(solar_orbit_period);
 
   useFrame((state, delta) => {
-    if (!meshRef.current || !parentRef?.current) return;
+    if (!meshRef.current || !orbitRef.current) return;
 
-    const parentPos = new Vector3();
-    parentRef.current.getWorldPosition(parentPos);
+    // Orbit rotation applied to the parent group (orbitRef)
+    orbitRef.current.rotation.y += orbitSpeed * systemSpeed * delta;
 
-    // Dynamically get parent's current size
-    const parentRadius =
-      parentRef.current.geometry?.parameters?.radius || parentSize;
-
-    const moonDistance = parentRadius * distanceMultiplier;
-    const moonSize = parentRadius * sizeRatio;
-
-    // Update orbit
-    angleRef.current += speed * delta * systemSpeed;
-
-    const orbitPos = new Vector3(
-      Math.cos(angleRef.current) * moonDistance,
-      0,
-      -Math.sin(angleRef.current) * moonDistance
-    );
-
-    orbitPos.applyEuler(tiltEuler); 
-
-    meshRef.current.position.copy(parentPos.clone().add(orbitPos));
-
-    // Self-rotation
-    meshRef.current.rotation.y += 0.23 * systemSpeed * delta;
-
-    // Update Moon size dynamically
-    if (meshRef.current.geometry.parameters.radius !== moonSize) {
-      meshRef.current.geometry.dispose();
-      meshRef.current.geometry = new SphereGeometry(moonSize, 32, 32);
-    }
+    // Self rotation applied to the moon mesh (meshRef)
+    meshRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
   });
 
-  const handleClick1 = () => {
-    handleClick(meshRef);
-  };
+  useEffect(() => {
+    if (!meshRef.current||!orbitRef.current) return;
+
+    // Distance from planet scaled by parent's size and multiplier
+
+    // Initial position on x axis at moonDistance
+    const initialPosition = new Vector3(distance, 0, 0);
+
+    // Apply inclination tilt to initial position
+
+    meshRef.current.position.copy(initialPosition);
+    orbitRef.current.rotation.set(
+      inclination * (Math.PI / 180),
+      0,
+      0,
+      
+      // Convert inclination to radians
+    );
+  }, [parentSize]);
 
   return (
     <Outlined>
-      <mesh ref={meshRef} onDoubleClick={handleClick1} castShadow receiveShadow>
-        <sphereGeometry args={[parentSize * sizeRatio, 32, 32]} />
-        <meshPhongMaterial map={texture} />
-      </mesh>
+      <group ref={orbitRef}>
+        <mesh
+          name={name}
+          ref={meshRef}
+          onDoubleClick={() => selectPlanet("Moon")}
+          castShadow
+          receiveShadow
+        >
+          <sphereGeometry
+            args={[parentSize * Math.max(0.1, ratio_to_parent), 32, 32]}
+          />
+
+          <meshStandardMaterial map={moonTexture} />
+        </mesh>
+      </group>
+      <OrbitLine radius={distance} tilt={-inclination} />
     </Outlined>
   );
 }
