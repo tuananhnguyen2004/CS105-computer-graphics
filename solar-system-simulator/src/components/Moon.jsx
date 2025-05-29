@@ -80,7 +80,7 @@ export default function Moon({
           <meshStandardMaterial map={moonTexture} />
         </mesh>
       </group>
-      <OrbitLine radius={distance} tilt={-inclination} />
+      <OrbitLine radius={distance} tilt={inclination} />
     </Outlined>
   );
 }

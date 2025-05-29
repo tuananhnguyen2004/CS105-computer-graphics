@@ -24,7 +24,7 @@ export default function OrbitLine({
 
     return pts.map((p) => {
       const x = p.x;
-      const y = Math.sin(tiltRad) * p.y; // apply tilt to y
+      const y = Math.sin(-tiltRad) * p.y; // apply tilt to y
       const z = Math.cos(tiltRad) * p.y; // apply tilt to z
       return new Vector3(x, y, z);
     });

@@ -142,7 +142,7 @@ export default function App() {
               {orbit && (
                 <OrbitLine
                   radius={planet.distance}
-                  tilt={-planet.inclination}
+                  tilt={planet.inclination}
                 />
               )}
             </group>
