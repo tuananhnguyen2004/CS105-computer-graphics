@@ -142,34 +142,25 @@ vec4 color = mix(nightColor, dayColor, light);
     }
   });
 
-  useEffect(() => {
-    if (rotationRef.current) {
-      rotationRef.current.rotation.x = tilt * (Math.PI / 180);
-    }
-    if (meshRef.current) {
-      // Set initial position based on distance
-      meshRef.current.rotation.set(
-        inclination * (Math.PI / 180),
-        0,
-        0
-
-        // Convert inclination to radians
-      );
-    }
-  }, [tilt]);
-
   return (
     <Outlined>
       <group
         ref={meshRef}
         castShadow
         receiveShadow
+        rotation={[inclination * (Math.PI / 180), 0, 0]}
         onDoubleClick={() => {
           selectPlanet(name);
         }}
       >
         <group position={[distance, 0, 0]}>
-          <mesh name={name} ref={rotationRef} castShadow receiveShadow>
+          <mesh
+            name={name}
+            ref={rotationRef}
+            rotation={[tilt * (Math.PI / 180), 0, 0]}
+            castShadow
+            receiveShadow
+          >
             <sphereGeometry args={[size, 64, 64]} />
             {/* <meshStandardMaterial  map={dayMap} /> */}
             <primitive object={material} ref={materialRef} />

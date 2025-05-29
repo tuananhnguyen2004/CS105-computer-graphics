@@ -43,32 +43,13 @@ export default function Moon({
     meshRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
   });
 
-  useEffect(() => {
-    if (!meshRef.current||!orbitRef.current) return;
-
-    // Distance from planet scaled by parent's size and multiplier
-
-    // Initial position on x axis at moonDistance
-    const initialPosition = new Vector3(distance, 0, 0);
-
-    // Apply inclination tilt to initial position
-
-    meshRef.current.position.copy(initialPosition);
-    orbitRef.current.rotation.set(
-      inclination * (Math.PI / 180),
-      0,
-      0,
-      
-      // Convert inclination to radians
-    );
-  }, [parentSize]);
-
   return (
     <Outlined>
-      <group ref={orbitRef}>
+      <group ref={orbitRef} rotation={[inclination * (Math.PI / 180), 0, 0]}>
         <mesh
           name={name}
           ref={meshRef}
+          position={[distance, 0, 0]}
           onDoubleClick={() => selectPlanet("Moon")}
           castShadow
           receiveShadow
