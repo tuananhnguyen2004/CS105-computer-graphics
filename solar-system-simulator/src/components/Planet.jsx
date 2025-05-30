@@ -33,6 +33,7 @@ export default function Planet({
   tilt, // Axial tilt
   inclination = 0,
   moonObject = [],
+  position
 }) {
   const { selectPlanet, systemSpeed } = useContext(SelectContext);
   const dayMap = useLoader(TextureLoader, texture);
@@ -80,7 +81,7 @@ export default function Planet({
 
     mat.onBeforeCompile = (shader) => {
       shader.uniforms.nightMap = { value: nightMap };
-      shader.uniforms.lightDirection = { value: new Vector3(1, 0, 0) };
+      shader.uniforms.lightDirection = { value: new Vector3(0, 0, 0) };
       shader.uniforms.useSameMap = { value: useSameMap };
 
       // Declare varyings at the top of vertex shader
@@ -159,7 +160,7 @@ vec4 color = mix(nightColor, dayColor, light);
         ref={meshRef}
         castShadow
         receiveShadow
-        position={[0, 0, 0]}
+        position={position??[0, 0, 0]}
         rotation={[inclination * (Math.PI / 180), 0, 0]}
         onDoubleClick={() => {
           selectPlanet(name);

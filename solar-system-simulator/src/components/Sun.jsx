@@ -1,20 +1,14 @@
 import { useFrame, useLoader } from "@react-three/fiber";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useRef } from "react";
 import {
-  AdditiveBlending,
   BackSide,
-  DoubleSide,
-  FrontSide,
-  TextureLoader,
+  TextureLoader
 } from "three";
-import Outlined from "./Outline";
-import sun from "../data/sun.json"
 import { SelectContext } from "../App";
+import Outlined from "./Outline";
 
-export default function Sun({
-  rotationSpeed = 0.256,
-}) {
-  const {selectPlanet,systemSpeed} = useContext(SelectContext);
+export default function Sun({ rotationSpeed = 0.256 }) {
+  const { selectPlanet, systemSpeed } = useContext(SelectContext);
   const texture = useLoader(TextureLoader, "textures/sun.jpg");
   const meshRef = useRef();
 
@@ -25,7 +19,14 @@ export default function Sun({
   return (
     <group>
       <Outlined>
-        <mesh name="Sun" ref={meshRef} position={[0, 0, 0]} onDoubleClick={() => {selectPlanet("Sun")}}>
+        <mesh
+          name="Sun"
+          ref={meshRef}
+          position={[0, 0, 0]}
+          onDoubleClick={() => {
+            selectPlanet("Sun");
+          }}
+        >
           <sphereGeometry args={[2, 64, 64]} />
           <meshBasicMaterial map={texture} />
           <pointLight
