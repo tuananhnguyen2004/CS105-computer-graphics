@@ -11,14 +11,13 @@ import {
   Select,
   Bloom,
 } from "@react-three/postprocessing";
-import Planet from "./components/Planet";
 import Background from "./components/Background";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import Sun from "./components/Sun";
 import AxisHelper from "./components/AxisHelper";
-import GridHelper from "./components/GridHelper";
+import Grid from "./components/Grid";
 import OrbitLine from "./components/OrbitLine";
-import { Object3D, Quaternion, Vector3, MathUtils } from "three";
+import { Object3D, Quaternion, Vector3, MathUtils, PCFShadowMap } from "three";
 import CameraController from "./components/CameraController";
 import SelectBar from "./components/SelectBar";
 import ControlBar from "./components/ControlBar";
@@ -26,43 +25,56 @@ import PlanetInfoPanel from "./components/PlanetInfo";
 
 import planets from "./data/formatedPlanets";
 import rawPlanets from "./data/planets.json";
+import AsteroidBelt from "./components/AsteroidBelt";
+import Planet from "./components/planet";
+import sun from "./data/sun.json";
+import moons from "./data/moon.json";
+import SceneController from "./components/SceneController";
+
+
+export const SelectContext = createContext("SelectContext");
 
 export default function App() {
+  const [sceneRef, setSceneRef] = useState(null);
+  const [speed, setSpeed] = useState(parseFloat(1 / 24));
+  const [orbit, setOrbit] = useState(true);
+  const [grid, setGrid] = useState(true);
+
   const [target, setTarget] = useState(null);
-  const [speed, setSpeed] = useState(1);
-  const [orbit,setOrbit] = useState(true)
-  const [grid,setGrid] = useState(true)
-  const planetRefs = useRef({});
   const [selectedPlanet, setSelectedPlanet] = useState(rawPlanets[2]);
 
-
   const selectPlanet = (name) => {
-    const ref = planetRefs.current[name];
-    console.log("name: " + name);
-    if (ref?.current) {
+    if(!sceneRef) return;
+    const ref = sceneRef.getObjectByName(name);
+   
+    if (ref) {
       setTarget(ref);
-      // target.planet.name;
-      setSelectedPlanet(rawPlanets[ref.current.planet_id]);
+
+      setSelectedPlanet(
+        [...rawPlanets, ...moons, sun].find((p) => p.name === name)
+      );
     }
   };
 
   useEffect(() => {
-    if (target) {
-      setSpeed(0);
-    } else {
-      setSpeed(1);
-    }
+    setSpeed(target ? 0 : 1);
   }, [target]);
 
   return (
-    <>
-      <SelectBar onSelect={selectPlanet} />
-      <ControlBar onChange={setSpeed} value={speed} grid={grid} orbit={orbit} toggleGrid={setGrid} toggleOrbit={setOrbit} />
-      {target && ( 
+    <SelectContext.Provider value={{ selectPlanet, systemSpeed: speed, orbit }}>
+      <SelectBar />
+      <ControlBar
+        onChange={setSpeed}
+        value={speed}
+        grid={grid}
+        orbit={orbit}
+        toggleGrid={setGrid}
+        toggleOrbit={setOrbit}
+      />
+      {target && (
         <button
           className="panel"
           onClick={() => {
-            document.querySelector('#planet-info-panel').className = "planet-info-panel-hide";
             setTarget(null);
           }}
           style={{
@@ -74,20 +86,33 @@ export default function App() {
         </button>
       )}
 
-      <PlanetInfoPanel planetData={selectedPlanet} onClose={() => {
-        document.querySelector('#planet-info-panel').className = "planet-info-panel-hide";
-      }}/>
+      <PlanetInfoPanel
+        planetData={selectedPlanet}
+        onClose={() => {
+          document.querySelector("#planet-info-panel").className =
+            "planet-info-panel-hide";
+        }}
+      />
 
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
         style={{ width: "100vw", height: "100vh" }}
+        shadows
+        gl={{ antialias: true }}
+        onCreated={({ gl, camera }) => {
+          gl.shadowMap.enabled = true;
+          gl.shadowMap.type = PCFShadowMap;
+        }}
       >
-        {grid && <GridHelper size={700} divisions={10} />}
+        <SceneController onSceneReady={setSceneRef} />
+        {grid && <Grid size={700} divisions={200} opacity={0.05} />}
         <Background />
-        <ambientLight intensity={0.2} />
+        <ambientLight intensity={0.3} />
 
-        <CameraController key={target ? target.uuid : "reset"} cameraTarget={target} />
-
+        <CameraController
+          key={target ? target.uuid : "reset"}
+          cameraTarget={target}
+        />
         <Selection>
           <EffectComposer multisampling={8} autoClear={false}>
             {/* <Outline
@@ -99,33 +124,27 @@ export default function App() {
             /> */}
 
             <Bloom
-              luminanceThreshold={0}
+              intensity={5}
+              kernelSize={1}
+              radius={0.1}
+              strength={0.1}
+              luminanceThreshold={0.9}
               luminanceSmoothing={0.9}
-              intensity={1.5}
             />
+
+            <Sun systemSpeed={speed} handleClick={selectPlanet} />
           </EffectComposer>
-
-          <Sun systemSpeed={speed} handleClick={setTarget} />
-
-          {planets.map((planet, i) => {
-            const planetRef = useRef();
-            planetRefs.current[planet.name] = planetRef;
-            console.log(planet.speed, planet.rotationSpeed, planet.name);
-            return (
-              <group key={i}>
-                <Planet
-                  {...planet}
-                  size={ planet.size }
-                  systemSpeed={speed}
-                  outerRef={planetRef}
-                  handleClick={setTarget}
-                />
-                {orbit && <OrbitLine radius={planet.distance}  tilt={-planet.inclination}/>}
-              </group>
-            );
-          })}
         </Selection>
+        {planets.map((planet, i) => {
+          return (
+            <group key={i}>
+              <Planet {...planet} size={planet.size} systemSpeed={speed} />
+              
+            </group>
+          );
+        })}
+        <AsteroidBelt count={1000} radius={20} systemSpeed={speed} />
       </Canvas>
-    </>
+    </SelectContext.Provider>
   );
 }

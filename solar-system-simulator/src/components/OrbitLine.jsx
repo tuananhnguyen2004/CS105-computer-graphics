@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { Line } from "@react-three/drei";
 import { EllipseCurve, Vector3 } from "three";
+import { SelectContext } from "../App";
 
 export default function OrbitLine({
   radius = 10,
@@ -8,6 +9,9 @@ export default function OrbitLine({
   color = "white",
   tilt = 0,
 }) {
+  const {orbit} = useContext(SelectContext);
+  if(!orbit) return null; // Don't render if orbit is disabled
+  // Create an ellipse curve for the orbit
   const points = useMemo(() => {
     const curve = new EllipseCurve(
       0,
@@ -24,7 +28,7 @@ export default function OrbitLine({
 
     return pts.map((p) => {
       const x = p.x;
-      const y = Math.sin(tiltRad) * p.y; // apply tilt to y
+      const y = Math.sin(-tiltRad) * p.y; // apply tilt to y
       const z = Math.cos(tiltRad) * p.y; // apply tilt to z
       return new Vector3(x, y, z);
     });

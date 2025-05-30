@@ -15,11 +15,12 @@
     "temperature_winter": "-183 °C",
     "description": "Mercury is the closest planet to the Sun and the smallest in the Solar System. It has a rocky, cratered surface much like the Moon. With virtually no atmosphere to retain heat, temperatures swing drastically between day and night.",
     "tilt": 0.03,
-    "inclination": 7.00
+    "inclination": 7.0
   },
   {
     "id": 1,
     "name": "Venus",
+    "atmosphereTexture": "textures/venus_atmosphere.jpg",
     "image": "textures/Venus.png",
     "texture": "textures/venus_surface.jpg",
     "equatorial_diameter": "12 104 KM",
@@ -38,11 +39,31 @@
   {
     "id": 2,
     "name": "Earth",
+    "atmosphereTexture": "textures/Earth-clouds.png",
     "image": "textures/Earth.png",
     "texture": "textures/earth_daymap.jpg",
     "nightTexture": "textures/earth_nightmap.jpg",
     "equatorial_diameter": "12 756 KM",
     "mass": "6 × 10²⁴ KG",
+    "moon": "Moon",
+    "moonObject": [
+      {
+        "id": -2,
+        "name": "Moon",
+        "image": "textures/moon.png",
+        "texture": "textures/moon.jpg",
+        "equatorial_diameter": "3476 KM",
+        "mass": "7.3 × 10²² KG",
+        "mean_distance_from_planet": "384 670 KM",
+        "rotation_period": "27 DAYS",
+        "solar_orbit_period": "27 DAYS",
+        "surface_gravity": "1.62 m/s²",
+        "surface_temperature": "-23 °C",
+        "inclination": 5.145,
+        "ratio_to_parent": 0.273,
+        "description": "The Moon is Earth's only natural satellite. It has a rocky surface covered with craters and flat plains. It influences Earth's tides and has a synchronous rotation, meaning the same side always faces Earth. It has no atmosphere, leading to extreme temperature variations."
+      }
+    ],
     "mean_distance_from_sun": "150 M KM",
     "rotation_period": "23H 56M",
     "solar_orbit_period": "1 YEARS",
@@ -52,7 +73,7 @@
     "temperature_winter": null,
     "description": "Earth is the only planet known to support life, with liquid water covering over 70% of its surface. It has a breathable atmosphere and a protective magnetic field. Its surface includes mountains, oceans, forests, and deserts.",
     "tilt": 23.5,
-    "inclination": 0.00
+    "inclination": 0.0
   },
   {
     "id": 3,
@@ -61,6 +82,41 @@
     "texture": "textures/mars.jpg",
     "equatorial_diameter": "6792 KM",
     "mass": "6.4 × 10²³ KG",
+    "moon": "Phobos, Deimos",
+    "moonObject": [
+      {
+        "id": -3,
+        "name": "Phobos",
+        "image": "textures/phobos.png",
+        "texture": "textures/phobos.jpg",
+        "equatorial_diameter": "22.4 KM",
+        "mass": "1.0659 × 10¹⁶ KG",
+        "mean_distance_from_planet": "9 376 KM",
+        "rotation_period": "0.3189 DAYS",
+        "solar_orbit_period": "0.3189 DAYS",
+        "surface_gravity": "0.0057 m/s²",
+        "surface_temperature": "-40 °C",
+        "inclination": 1.08,
+        "ratio_to_parent": 0.0033,
+        "description": "Phobos is the larger and closer of Mars' two moons. It is irregularly shaped and heavily cratered. Phobos orbits Mars very quickly, completing one orbit in about 7.6 hours. It is slowly spiraling inward and may eventually break apart or crash into Mars."
+      },
+      {
+        "id": -4,
+        "name": "Deimos",
+        "image": "textures/deimos.png",
+        "texture": "textures/deimos.jpg",
+        "equatorial_diameter": "12.4 KM",
+        "mass": "1.4762 × 10¹⁵ KG",
+        "mean_distance_from_planet": "23 463 KM",
+        "rotation_period": "1.263 DAYS",
+        "solar_orbit_period": "1.263 DAYS",
+        "surface_gravity": "0.003 m/s²",
+        "surface_temperature": "-40 °C",
+        "inclination": 1.79,
+        "ratio_to_parent": 0.0018,
+        "description": "Deimos is the smaller and more distant of Mars' two moons. It has a smoother and less cratered surface compared to Phobos. Deimos orbits Mars in about 30.3 hours and is thought to be a captured asteroid."
+      }
+    ],
     "mean_distance_from_sun": "228 M KM",
     "rotation_period": "1.03 DAYS",
     "solar_orbit_period": "1.88 YEARS",

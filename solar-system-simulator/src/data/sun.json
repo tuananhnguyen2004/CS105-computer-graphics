@@ -1,5 +1,7 @@
 {
+    "id": -1,
     "name": "Sun",
+    "image": "textures/sun.png",
     "texture": "sun.jpg",
     "equatorial_diameter": "1.39 M KM",
     "mass": "1.99 × 10³⁰ KG",

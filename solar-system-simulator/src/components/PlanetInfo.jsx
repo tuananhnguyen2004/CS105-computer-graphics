@@ -1,19 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect, useRef } from "react";
+import { X } from "lucide-react";
 
 const PlanetInfoPanel = ({ planetData, onClose }) => {
+  if (planetData === null) {
+    return null; // Không hiển thị panel nếu không có dữ liệu hành tinh
+  }
   // Danh sách các thuộc tính cần hiển thị và tiêu đề tương ứng
-  const properties = [
-    { key: 'equatorial_diameter', label: 'EQUATORIAL DIAMETER' },
-    { key: 'mass', label: 'Mass' },
-    { key: 'mean_distance_from_sun', label: 'MEAN DISTANCE FROM SUN' },
-    { key: 'rotation_period', label: 'ROTATION PERIOD' },
-    { key: 'solar_orbit_period', label: 'SOLAR ORBIT PERIOD' },
-    { key: 'surface_gravity', label: 'SURFACE GRAVITY' },
-    { key: 'surface_temperature', label: 'SURFACE TEMPERATURE' },
-    { key: 'temperature_summer', label: 'TEMPERATURE SUMMER' },
-    { key: 'temperature_winter', label: 'TEMPERATURE WINTER' }
-  ];
+  // const properties = [
+  //   { key: "equatorial_diameter", label: "EQUATORIAL DIAMETER" },
+  //   { key: "mass", label: "Mass" },
+  //   { key: "mean_distance_from_sun", label: "MEAN DISTANCE FROM SUN" },
+  //   { key: "rotation_period", label: "ROTATION PERIOD" },
+  //   { key: "solar_orbit_period", label: "SOLAR ORBIT PERIOD" },
+  //   { key: "surface_gravity", label: "SURFACE GRAVITY" },
+  //   { key: "surface_temperature", label: "SURFACE TEMPERATURE" },
+  //   { key: "temperature_summer", label: "TEMPERATURE SUMMER" },
+  //   { key: "temperature_winter", label: "TEMPERATURE WINTER" },
+  // ];
 
   // const panelStyle = {
   //   position: 'fixed',
@@ -32,28 +35,28 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
   // };
 
   const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingRight: '8px'
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight: "8px",
   };
 
   const titleStyle = {
-    fontSize: '24px',
-    fontWeight: 'bold'
+    fontSize: "24px",
+    fontWeight: "bold",
   };
 
   const closeButtonStyle = {
-    padding: '4px',
-    borderRadius: '50%',
-    cursor: 'pointer',
-    background: 'none',
-    border: 'none',
-    color: 'white'
+    padding: "4px",
+    borderRadius: "50%",
+    cursor: "pointer",
+    background: "none",
+    border: "none",
+    color: "white",
   };
 
   const propertyContainerStyle = {
-    marginBottom: '16px'
+    marginBottom: "16px",
     // paddingRight: '12px'
   };
 
@@ -82,40 +85,40 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
 `;
 
   const propertyItemStyle = {
-    borderBottom: '1px solid #334155', // slate-700
-    paddingBottom: '8px',
-    marginBottom: '1px'
+    borderBottom: "1px solid #334155", // slate-700
+    paddingBottom: "8px",
+    marginBottom: "1px",
   };
 
   const propertyLabelStyle = {
-    fontSize: '14px',
-    color: '#94a3b8', // slate-400
-    marginBottom: '0px'
+    fontSize: "14px",
+    color: "#94a3b8", // slate-400
+    marginBottom: "0px",
   };
 
   const propertyValueStyle = {
-    fontSize: '18px'
+    fontSize: "18px",
   };
 
   const descriptionContainerStyle = {
-    marginTop: '10px'
+    marginTop: "10px",
   };
 
   const descriptionLabelStyle = {
-    fontSize: '14px',
-    color: '#94a3b8', // slate-400
-    marginBottom: '0px'
+    fontSize: "14px",
+    color: "#94a3b8", // slate-400
+    marginBottom: "0px",
   };
 
   const descriptionTextStyle = {
-    fontSize: '16px',
-    lineHeight: '1.5'
+    fontSize: "16px",
+    lineHeight: "1.5",
   };
 
-   // Đăng ký xử lý sự kiện khi component được mount
-   useEffect(() => {
+  // Đăng ký xử lý sự kiện khi component được mount
+  useEffect(() => {
     // Tìm panel element sau khi component được render
-    const panelElement = document.querySelector('#planet-info-panel');
+    const panelElement = document.querySelector("#planet-info-panel");
     if (panelElement) {
       // Ngăn chặn sự kiện wheel lan truyền
       const preventDefaultWheel = (e) => {
@@ -123,7 +126,7 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
         // Kiểm tra nếu đã cuộn đến cạnh trên/dưới và vẫn muốn cuộn thêm
         const { scrollTop, scrollHeight, clientHeight } = panelElement;
         if (
-          (scrollTop === 0 && e.deltaY < 0) || 
+          (scrollTop === 0 && e.deltaY < 0) ||
           (scrollTop + clientHeight >= scrollHeight && e.deltaY > 0)
         ) {
           // Cho phép sự kiện lan truyền khi đã cuộn đến biên
@@ -131,34 +134,49 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
         }
         // e.preventDefault();
       };
-      
-      panelElement.addEventListener('wheel', preventDefaultWheel, { passive: true });
-      
+
+      panelElement.addEventListener("wheel", preventDefaultWheel, {
+        passive: true,
+      });
+
       // Cleanup khi component bị unmount
       return () => {
-        panelElement.removeEventListener('wheel', preventDefaultWheel);
+        panelElement.removeEventListener("wheel", preventDefaultWheel);
       };
     }
   }, []);
 
   return (
     <>
-      <style className='scrollbar'>{scrollbarStyles}</style>
-      <div id='planet-info-panel' className="planet-info-panel-hide">
+      <style className="scrollbar">{scrollbarStyles}</style>
+      <div id="planet-info-panel" className="planet-info-panel-show">
         <div style={headerStyle}>
           <h2 style={titleStyle}>{planetData.name}</h2>
-          <button 
+          <button
             onClick={onClose}
             style={closeButtonStyle}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#334155'} // hover effect
-            onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#334155")} // hover effect
+            onMouseOut={(e) => (e.target.style.backgroundColor = "transparent")}
           >
             <X size={24} />
           </button>
         </div>
 
         <div style={propertyContainerStyle}>
-          {properties.map(({ key, label }) => (
+          {Object.entries(planetData)
+            .filter(
+              ([key, value]) =>
+                value !== null && !["id", "texture", "image", "name","moonObject","atmosphereTexture","nightTexture"].includes(key)
+            )
+            .map(([key, value]) => (
+              <div key={key} style={propertyItemStyle}>
+                <h3 style={propertyLabelStyle}>
+                  {key.replace("_", " ").toUpperCase()}
+                </h3>
+                <p style={propertyValueStyle}>{value}</p>
+              </div>
+            ))}
+          {/* {properties.map(({ key, label }) => (
             // Chỉ hiển thị thuộc tính nếu giá trị khác null
             planetData[key] !== null && (
               <div key={key} style={propertyItemStyle}>
@@ -166,15 +184,15 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
                 <p style={propertyValueStyle}>{planetData[key]}</p>
               </div>
             )
-          ))}
+          ))} */}
 
           {/* Hiển thị mô tả nếu có */}
-          {planetData.description !== null && (
+          {/* {planetData.description !== null && (
             <div style={descriptionContainerStyle}>
               <h3 style={descriptionLabelStyle}>DESCRIPTION</h3>
               <p style={descriptionTextStyle}>{planetData.description}</p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </>
