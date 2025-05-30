@@ -124,7 +124,7 @@ vec4 color = mix(nightColor, dayColor, light);
   useFrame(({ camera }) => {
     if (shaderRef.current) {
       const planetPos = new Vector3();
-      meshRef.current.getWorldPosition(planetPos);
+      rotationRef.current.getWorldPosition(planetPos);
 
       // Light direction in world space
       const sunPosition = new Vector3(0, 0, 0); // or wherever your sun is
@@ -148,6 +148,7 @@ vec4 color = mix(nightColor, dayColor, light);
         ref={meshRef}
         castShadow
         receiveShadow
+        position={[0, 0, 0]}
         rotation={[inclination * (Math.PI / 180), 0, 0]}
         onDoubleClick={() => {
           selectPlanet(name);
@@ -183,6 +184,7 @@ vec4 color = mix(nightColor, dayColor, light);
             <Moon key={index} parentSize={size} {...moon} />
           ))}
         </group>
+        <OrbitLine radius={distance} tilt={0} />
       </group>
     </Outlined>
   );

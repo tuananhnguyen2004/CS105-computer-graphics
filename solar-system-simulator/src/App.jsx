@@ -31,6 +31,7 @@ import sun from "./data/sun.json";
 import moons from "./data/moon.json";
 import SceneController from "./components/SceneController";
 
+
 export const SelectContext = createContext("SelectContext");
 
 export default function App() {
@@ -106,13 +107,12 @@ export default function App() {
         <SceneController onSceneReady={setSceneRef} />
         {grid && <Grid size={700} divisions={200} opacity={0.05} />}
         <Background />
-        <ambientLight intensity={0.2} />
+        <ambientLight intensity={0.3} />
 
         <CameraController
           key={target ? target.uuid : "reset"}
           cameraTarget={target}
         />
-
         <Selection>
           <EffectComposer multisampling={8} autoClear={false}>
             {/* <Outline
@@ -139,12 +139,7 @@ export default function App() {
           return (
             <group key={i}>
               <Planet {...planet} size={planet.size} systemSpeed={speed} />
-           
-                <OrbitLine
-                  radius={planet.distance}
-                  tilt={planet.inclination}
-                />
-        
+              
             </group>
           );
         })}
