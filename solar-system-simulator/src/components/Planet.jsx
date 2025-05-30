@@ -42,12 +42,10 @@ export default function Planet({
   );
   const meshRef = useRef();
   const shaderRef = useRef(null);
-  const orbitRef = useRef();
-  const positionRef1 = useRef(); // For orbit line positioning
-  const positionRef2 = useRef(); // For orbit line positioning
+  const positionRef = useRef(); // For orbit line positioning
   const rotationRef = useRef(); // For axial rotation and tilt
   const materialRef = useRef();
-
+  const angleRef = useRef(Math.random() * Math.PI * 2);
 
   const useSameMap = !nightTexture || nightTexture === texture; // Use same map for day and night if no night texture provided
 
@@ -59,20 +57,15 @@ export default function Planet({
       return;
 
     rotationRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
+    // Update orbital angle
+    angleRef.current -= speed * systemSpeed * delta;
 
-    orbitRef.current.rotation.y += speed * systemSpeed * delta; // Apply orbital rotation
+    // Circular orbit on XZ plane
+    const angle = angleRef.current;
+    const x = distance * Math.cos(angle);
+    const z = distance * Math.sin(angle);
 
-    if (positionRef1.current && positionRef2.current && meshRef.current) {
-      const worldPos = new Vector3();
-      positionRef1.current.getWorldPosition(worldPos);
-
-      // Convert world position to local space of meshRef
-      meshRef.current.worldToLocal(worldPos);
-
-
-      positionRef2.current.position.copy(worldPos);
-    }
-
+    positionRef.current.position.set(x, 0, z);
   });
 
   const material = useMemo(() => {
@@ -165,7 +158,7 @@ vec4 color = mix(nightColor, dayColor, light);
           selectPlanet(name);
         }}
       >
-        <group ref={positionRef2}>
+        <group ref={positionRef} position={[distance, 0, 0]}>
           <mesh
             name={name}
             ref={rotationRef}
@@ -195,10 +188,8 @@ vec4 color = mix(nightColor, dayColor, light);
             <Moon key={index} parentSize={size} {...moon} />
           ))}
         </group>
-        <group ref={orbitRef}>
-          <mesh ref={positionRef1} position={[distance, 0, 0]} />
-          <OrbitLine radius={distance} tilt={0} />
-        </group>
+
+        <OrbitLine radius={distance} tilt={0} />
       </group>
     </Outlined>
   );

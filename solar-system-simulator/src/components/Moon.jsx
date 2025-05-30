@@ -25,8 +25,8 @@ export default function Moon({
   const { selectPlanet, systemSpeed } = useContext(SelectContext);
   const moonTexture = useLoader(TextureLoader, texture);
   const meshRef = useRef();
+  const angleRef = useRef(Math.random() * Math.PI * 2);
 
-  const orbitRef = useRef();
   const realDistance = parseDistance(mean_distance_from_planet);
   const distance = Math.min(realDistance / KM_PER_SCENE_UNIT, 2);
 
@@ -34,18 +34,25 @@ export default function Moon({
   const orbitSpeed = calculateOrbitSpeedInRadianPerDay(solar_orbit_period);
 
   useFrame((state, delta) => {
-    if (!meshRef.current || !orbitRef.current) return;
-
-    // Orbit rotation applied to the parent group (orbitRef)
-    orbitRef.current.rotation.y += orbitSpeed * systemSpeed * delta;
+    if (!meshRef.current) return;
 
     // Self rotation applied to the moon mesh (meshRef)
-    meshRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
+    meshRef.current.rotation.y += rotationSpeed  * systemSpeed * delta;
+
+    // Update orbital angle
+    angleRef.current -= orbitSpeed * systemSpeed * delta;
+
+    // Circular orbit on XZ plane
+    const angle = angleRef.current;
+    const x = distance * Math.cos(angle);
+    const z = distance * Math.sin(angle);
+
+    meshRef.current.position.set(x, 0, z);
   });
 
   return (
     <Outlined>
-      <group ref={orbitRef} rotation={[inclination * (Math.PI / 180), 0, 0]}>
+      <group rotation={[inclination * (Math.PI / 180), 0, 0]}>
         <mesh
           name={name}
           ref={meshRef}
