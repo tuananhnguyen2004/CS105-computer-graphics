@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 
 const PlanetInfoPanel = ({ planetData, onClose }) => {
   if (planetData === null) {
