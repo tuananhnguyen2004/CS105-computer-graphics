@@ -1,10 +1,10 @@
+import { button } from "leva";
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const PlanetInfoPanel = ({ planetData, onClose }) => {
-  if (planetData === null) {
-    return null; // Không hiển thị panel nếu không có dữ liệu hành tinh
-  }
+const PlanetInfoPanel = ({ planetData }) => {
+  if(planetData === null) return null;
+  const [isShow, setIsShow] = useState(true);
   // Danh sách các thuộc tính cần hiển thị và tiêu đề tương ứng
   // const properties = [
   //   { key: "equatorial_diameter", label: "EQUATORIAL DIAMETER" },
@@ -38,7 +38,9 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingRight: "8px",
+    backgroundColor: "rgba(0, 139, 139, 0.425)", // slate-900
+    padding: "10px 10px",
+   
   };
 
   const titleStyle = {
@@ -46,43 +48,13 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
     fontWeight: "bold",
   };
 
-  const closeButtonStyle = {
-    padding: "4px",
-    borderRadius: "50%",
-    cursor: "pointer",
-    background: "none",
-    border: "none",
-    color: "white",
-  };
-
   const propertyContainerStyle = {
-    marginBottom: "16px",
+    height: "100%",
+    padding: "20px 10px",
+    overflow: "scroll",
     // paddingRight: '12px'
   };
 
-  const scrollbarStyles = `
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 10px;
-    margin: 50px;
-    margin-right: 8px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 255, 0.6);
-    border: 0.5em solid rgba(0, 0, 0, 0);
-    // background-clip: padding-box;
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 255, 0.8);
-  }
-`;
 
   const propertyItemStyle = {
     borderBottom: "1px solid #334155", // slate-700
@@ -146,55 +118,58 @@ const PlanetInfoPanel = ({ planetData, onClose }) => {
     }
   }, []);
 
+  useEffect(() => { 
+    if(planetData !== null) {
+      setIsShow(true);
+    } else {
+      setIsShow(false);
+    }
+  } ,[planetData])
+
   return (
     <>
-      <style className="scrollbar">{scrollbarStyles}</style>
-      <div id="planet-info-panel" className="planet-info-panel-show">
-        <div style={headerStyle}>
-          <h2 style={titleStyle}>{planetData.name}</h2>
-          <button
-            onClick={onClose}
-            style={closeButtonStyle}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#334155")} // hover effect
-            onMouseOut={(e) => (e.target.style.backgroundColor = "transparent")}
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <div style={propertyContainerStyle}>
-          {Object.entries(planetData)
-            .filter(
-              ([key, value]) =>
-                value !== null && !["id", "texture", "image", "name","moonObject","atmosphereTexture","nightTexture"].includes(key)
-            )
-            .map(([key, value]) => (
-              <div key={key} style={propertyItemStyle}>
-                <h3 style={propertyLabelStyle}>
-                  {key.replace("_", " ").toUpperCase()}
-                </h3>
-                <p style={propertyValueStyle}>{value}</p>
-              </div>
-            ))}
-          {/* {properties.map(({ key, label }) => (
-            // Chỉ hiển thị thuộc tính nếu giá trị khác null
-            planetData[key] !== null && (
-              <div key={key} style={propertyItemStyle}>
-                <h3 style={propertyLabelStyle}>{label}</h3>
-                <p style={propertyValueStyle}>{planetData[key]}</p>
-              </div>
-            )
-          ))} */}
-
-          {/* Hiển thị mô tả nếu có */}
-          {/* {planetData.description !== null && (
-            <div style={descriptionContainerStyle}>
-              <h3 style={descriptionLabelStyle}>DESCRIPTION</h3>
-              <p style={descriptionTextStyle}>{planetData.description}</p>
+      {isShow ? (
+        <>
+          <div id="planet-info-panel" className="planet-info-panel">
+            <div style={headerStyle}>
+              <img src={planetData.image} alt={planetData?.name} width={46} height={46} className="select_item"/>
+              <span style={titleStyle}>{planetData?.name}</span>
+              <button
+                onClick={() => setIsShow(false)}
+                className="close-button"
+              >
+                x
+              </button>
             </div>
-          )} */}
-        </div>
-      </div>
+            <div style={propertyContainerStyle}>
+              {Object.entries(planetData??{})
+                ?.filter(
+                  ([key, value]) =>
+                    value !== null &&
+                    ![
+                      "id",
+                      "texture",
+                      "image",
+                      "name",
+                      "moonObject",
+                      "atmosphereTexture",
+                      "nightTexture",
+                    ].includes(key)
+                )
+                ?.map(([key, value]) => (
+                  <div key={key} style={propertyItemStyle}>
+                    <h3 style={propertyLabelStyle}>
+                      {key.replace("_", " ").toUpperCase()}
+                    </h3>
+                    <p style={propertyValueStyle}>{value}</p>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <button className="display-button" onClick={()=>setIsShow(true)}>&lt;</button>
+      )}
     </>
   );
 };

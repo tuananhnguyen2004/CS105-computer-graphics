@@ -37,7 +37,6 @@ body {
   user-select: none;
 }
 
-
 .select_item {
   font-family: monospace;
   padding: 5px;
@@ -103,22 +102,31 @@ input[type="range"]::-moz-range-thumb:hover {
   background: blue;
 }
 
-.planet-info-panel-show {
+.planet-info-panel {
   position: fixed;
-  border-radius: 10%;
+  border-radius: 20px;
   right: 0;
-  top: 20%;
+  top: 50%;
+  transform: translateY(-50%);
   height: 60%;
   width: 300px;
   background-color: rgba(0, 139, 139, 0.425);
   border: 2px solid #0ff;
   color: white;
-  padding: 0px 16px 24px 24px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   z-index: 50;
   box-sizing: border-box;
   transition: all 0.3s ease;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
 }
 
 .planet-info-panel-hide {
@@ -137,4 +145,68 @@ input[type="range"]::-moz-range-thumb:hover {
   z-index: 50;
   box-sizing: border-box;
   transition: all 0.3s ease;
+}
+
+.close-button {
+  padding: 5px;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  aspect-ratio: 1/1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+}
+.close-button:hover {
+  background: rgba(0, 255, 255, 0.6);
+}
+.close-button:active {
+  background: rgba(0, 255, 255, 0.8);
+}
+
+.display-button {
+  padding: 5px;
+  background-color: rgba(0, 255, 255, 0.6);
+  font-family: monospace;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  aspect-ratio: 1/1;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  position: fixed;
+  right: 10px;
+  z-index: 100;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 50px;
+  margin-right: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.6);
+  border: 0.5em solid rgba(0, 0, 0, 0);
+  /* background-clip: padding-box; */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.8);
 }

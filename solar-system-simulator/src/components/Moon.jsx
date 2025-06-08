@@ -57,7 +57,7 @@ export default function Moon({
           name={name}
           ref={meshRef}
           position={[distance, 0, 0]}
-          onDoubleClick={() => selectPlanet("Moon")}
+          onDoubleClick={() => {selectPlanet(name)}}
           castShadow
           receiveShadow
         >

@@ -33,7 +33,7 @@ export default function Planet({
   tilt, // Axial tilt
   inclination = 0,
   moonObject = [],
-  position
+  position,
 }) {
   const { selectPlanet, systemSpeed } = useContext(SelectContext);
   const dayMap = useLoader(TextureLoader, texture);
@@ -153,11 +153,8 @@ vec4 color = mix(nightColor, dayColor, light);
         ref={meshRef}
         castShadow
         receiveShadow
-        position={position??[0, 0, 0]}
+        position={position ?? [0, 0, 0]}
         rotation={[inclination * (Math.PI / 180), 0, 0]}
-        onDoubleClick={() => {
-          selectPlanet(name);
-        }}
       >
         <group ref={positionRef} position={[distance, 0, 0]}>
           <mesh
@@ -166,6 +163,9 @@ vec4 color = mix(nightColor, dayColor, light);
             rotation={[tilt * (Math.PI / 180), 0, 0]}
             castShadow
             receiveShadow
+            onDoubleClick={() => {
+              selectPlanet(name);
+            }}
           >
             <sphereGeometry args={[size, 64, 64]} />
             {/* <meshStandardMaterial  map={dayMap} /> */}
