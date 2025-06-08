@@ -80,6 +80,7 @@ const ControlBar = ({
           gap: "4px",
         }}
       >
+        
         {/* Control */}
         <div
           style={{

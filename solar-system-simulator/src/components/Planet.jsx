@@ -33,6 +33,7 @@ export default function Planet({
   tilt, // Axial tilt
   inclination = 0,
   moonObject = [],
+  position
 }) {
   const { selectPlanet, systemSpeed } = useContext(SelectContext);
   const dayMap = useLoader(TextureLoader, texture);
@@ -42,8 +43,12 @@ export default function Planet({
   );
   const meshRef = useRef();
   const shaderRef = useRef(null);
+  const orbitRef = useRef();
+  const positionRef1 = useRef(); // For orbit line positioning
+  const positionRef2 = useRef(); // For orbit line positioning
   const rotationRef = useRef(); // For axial rotation and tilt
   const materialRef = useRef();
+
 
   const useSameMap = !nightTexture || nightTexture === texture; // Use same map for day and night if no night texture provided
 
@@ -56,12 +61,19 @@ export default function Planet({
 
     rotationRef.current.rotation.y += rotationSpeed * systemSpeed * delta;
 
-    meshRef.current.rotation.y += speed * systemSpeed * delta; // Apply orbital rotation
+    orbitRef.current.rotation.y += speed * systemSpeed * delta; // Apply orbital rotation
 
-    // // Update shader uniform
-    // if (materialRef.current.uniforms.lightDirection) {
-    //   materialRef.current.uniforms.lightDirection.value = direction;
-    // }
+    if (positionRef1.current && positionRef2.current && meshRef.current) {
+      const worldPos = new Vector3();
+      positionRef1.current.getWorldPosition(worldPos);
+
+      // Convert world position to local space of meshRef
+      meshRef.current.worldToLocal(worldPos);
+
+
+      positionRef2.current.position.copy(worldPos);
+    }
+
   });
 
   const material = useMemo(() => {
@@ -69,7 +81,7 @@ export default function Planet({
 
     mat.onBeforeCompile = (shader) => {
       shader.uniforms.nightMap = { value: nightMap };
-      shader.uniforms.lightDirection = { value: new Vector3(1, 0, 0) };
+      shader.uniforms.lightDirection = { value: new Vector3(0, 0, 0) };
       shader.uniforms.useSameMap = { value: useSameMap };
 
       // Declare varyings at the top of vertex shader
@@ -148,13 +160,13 @@ vec4 color = mix(nightColor, dayColor, light);
         ref={meshRef}
         castShadow
         receiveShadow
-        position={[0, 0, 0]}
+        position={position??[0, 0, 0]}
         rotation={[inclination * (Math.PI / 180), 0, 0]}
         onDoubleClick={() => {
           selectPlanet(name);
         }}
       >
-        <group position={[distance, 0, 0]}>
+        <group ref={positionRef2}>
           <mesh
             name={name}
             ref={rotationRef}
@@ -184,7 +196,10 @@ vec4 color = mix(nightColor, dayColor, light);
             <Moon key={index} parentSize={size} {...moon} />
           ))}
         </group>
-        <OrbitLine radius={distance} tilt={0} />
+        <group ref={orbitRef}>
+          <mesh ref={positionRef1} position={[distance, 0, 0]} />
+          <OrbitLine radius={distance} tilt={0} />
+        </group>
       </group>
     </Outlined>
   );

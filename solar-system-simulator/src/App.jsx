@@ -30,7 +30,7 @@ import Planet from "./components/planet";
 import sun from "./data/sun.json";
 import moons from "./data/moon.json";
 import SceneController from "./components/SceneController";
-
+import BackgroundMusic from "./components/BackgroundMusic";
 
 export const SelectContext = createContext("SelectContext");
 
@@ -44,9 +44,9 @@ export default function App() {
   const [selectedPlanet, setSelectedPlanet] = useState(rawPlanets[2]);
 
   const selectPlanet = (name) => {
-    if(!sceneRef) return;
+    if (!sceneRef) return;
     const ref = sceneRef.getObjectByName(name);
-   
+
     if (ref) {
       setTarget(ref);
 
@@ -62,7 +62,9 @@ export default function App() {
 
   return (
     <SelectContext.Provider value={{ selectPlanet, systemSpeed: speed, orbit }}>
-      <SelectBar />
+      <div>
+        <SelectBar />
+      </div>
       <ControlBar
         onChange={setSpeed}
         value={speed}
@@ -93,6 +95,7 @@ export default function App() {
             "planet-info-panel-hide";
         }}
       />
+      <BackgroundMusic/>
 
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
@@ -139,7 +142,6 @@ export default function App() {
           return (
             <group key={i}>
               <Planet {...planet} size={planet.size} systemSpeed={speed} />
-              
             </group>
           );
         })}

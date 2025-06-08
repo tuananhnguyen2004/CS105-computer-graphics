@@ -18,7 +18,7 @@ export default function Moon({
   rotation_period,
   solar_orbit_period,
   ratio_to_parent,
-  sizeRatio = 0.27,
+
   inclination,
   texture,
 }) {
@@ -60,7 +60,7 @@ export default function Moon({
 
           <meshStandardMaterial map={moonTexture} />
         </mesh>
-      <OrbitLine radius={distance} />
+        <OrbitLine radius={distance} />
       </group>
     </Outlined>
   );
