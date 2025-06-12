@@ -6,21 +6,21 @@ export default function BackgroundMusic() {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const audio = audioRef.current;
+  // useEffect(() => {
+  //   const audio = audioRef.current;
 
-    if (audio) {
-      audio.volume = 0.5;
+  //   if (audio) {
+  //     audio.volume = 0.5;
 
-      const autoPlay = () => {
-        if (!isPlaying) {
-          audio.play.then(() => setIsPlaying(true)).catch(console.warn);
-        }
-        window.removeEventListener("click", autoPlay);
-      };
-      window.addEventListener("click", autoPlay);
-    }
-  }, [isPlaying]);
+  //     const autoPlay = () => {
+  //       if (!isPlaying) {
+  //         audio.play.then(() => setIsPlaying(true)).catch(console.warn);
+  //       }
+  //       window.removeEventListener("click", autoPlay);
+  //     };
+  //     window.addEventListener("click", autoPlay);
+  //   }
+  // }, [isPlaying]);
 
   const toggleMusic = () => {
     const audio = audioRef.current;
@@ -47,7 +47,8 @@ export default function BackgroundMusic() {
       <button className={`button`} onClick={toggleMusic} style={{padding:'10px 20px'}}>
         {isPlaying?<Volume2/>:<VolumeOff/>}
       </button>
-      <audio ref={audioRef} src={music} loop />
+   
+      <audio ref={audioRef} volume={0.5} src={music} loop />
     </div>
   );
 }

@@ -41,7 +41,7 @@ export default function App() {
   const [grid, setGrid] = useState(true);
 
   const [target, setTarget] = useState(null);
-  const [selectedPlanet, setSelectedPlanet] = useState(rawPlanets[2]);
+  const [selectedPlanet, setSelectedPlanet] = useState(null);
 
   const selectPlanet = (name) => {
     if (!sceneRef) return;
@@ -78,6 +78,7 @@ export default function App() {
           className="panel"
           onClick={() => {
             setTarget(null);
+            setSelectedPlanet(null);
           }}
           style={{
             position: "fixed",
@@ -90,10 +91,6 @@ export default function App() {
 
       <PlanetInfoPanel
         planetData={selectedPlanet}
-        onClose={() => {
-          document.querySelector("#planet-info-panel").className =
-            "planet-info-panel-hide";
-        }}
       />
       <BackgroundMusic/>
 

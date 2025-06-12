@@ -33,7 +33,7 @@ const SelectBar = () => {
       {moons.map((moon) => (
         <button
           key={moon.name}
-          onClick={() => selectPlanet(moon.name)}
+          onClick={() => {console.log(moon.name);selectPlanet(moon.name)}}
           className="select_item"
         >
           <img src={moon.image} alt="planet" height={32} />
